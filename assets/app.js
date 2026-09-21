@@ -56,6 +56,7 @@
   const CANGFENG_CORE_CDN = 'https://cangfengcore.lidmwork.workers.dev';
 
   function setupData(rawItems) {
+    const gisCdn = (window.GALLERY_CONFIG && window.GALLERY_CONFIG.gisAssetBaseUrl) || '';
     galleryItems = rawItems.map((item, idx) => {
       item.globalIndex = idx;
       if (item.category === 'original') {
@@ -65,6 +66,13 @@
         }
         if (item.dzi && item.dzi.Image && item.dzi.Image.Url && !item.dzi.Image.Url.startsWith('http')) {
           item.dzi.Image.Url = CANGFENG_CORE_CDN + '/' + item.dzi.Image.Url.replace(/^\/+/, '');
+        }
+      } else if (item.category === 'gis' && gisCdn) {
+        if (item.tileUrl && !item.tileUrl.startsWith('http')) {
+          item.tileUrl = gisCdn + '/' + item.tileUrl.replace(/^\/+/, '');
+        }
+        if (item.dzi && item.dzi.Image && item.dzi.Image.Url && !item.dzi.Image.Url.startsWith('http')) {
+          item.dzi.Image.Url = gisCdn + '/' + item.dzi.Image.Url.replace(/^\/+/, '');
         }
       }
       return item;
