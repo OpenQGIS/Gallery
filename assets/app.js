@@ -31,6 +31,10 @@
   async function init() {
     bindAntiTheft();
 
+    if (window.OpenSeadragon && OpenSeadragon.setImageFormatsSupported) {
+      OpenSeadragon.setImageFormatsSupported({ webp: true });
+    }
+
     if (window.GALLERY_MANIFEST) {
       setupData(window.GALLERY_MANIFEST);
       routePage();
