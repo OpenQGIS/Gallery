@@ -1027,7 +1027,7 @@
     if (vDims) vDims.style.display = 'none';
     if (mTitle) mTitle.textContent = item.title;
     if (mCat) mCat.textContent = item.categoryName + (item.subCategory ? ' · ' + item.subCategory : '');
-    if (mAuthor) mAuthor.textContent = item.author || (item.category === 'original' ? '原创作者' : '网络精选');
+    if (mAuthor) mAuthor.textContent = (item.author || (item.category === 'original' ? '原创作者' : '网络精选')) + (item.year ? ' · ' + item.year : '');
 
     if (mDesc) {
       if (item.description && item.description.trim()) {
@@ -1039,7 +1039,7 @@
     }
 
     if (mFile) mFile.textContent = item.filename;
-    if (mRes) mRes.textContent = item.width + ' × ' + item.height;
+    if (mRes) mRes.textContent = item.width + ' × ' + item.height + (item.physicalSize ? ' (' + item.physicalSize + ')' : '');
     if (mAspect) mAspect.textContent = item.aspectRatio + ':1 (原始画幅比)';
     if (mLevels) mLevels.textContent = '共 ' + (item.maxLevel + 1) + ' 级超高清多精度金字塔 (Level 0 ~ ' + item.maxLevel + ')';
 
