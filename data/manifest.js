@@ -304,7 +304,7 @@ window.GALLERY_MANIFEST = [
     "height": 2362,
     "aspectRatio": 0.7498,
     "thumb": "thumbs/shanghai.webp",
-    "tileUrl": "https://cangfengcore.lidmwork.workers.dev/tiles/shanghai_files/",
+    "tileUrl": "tiles/shanghai_files/",
     "maxLevel": 12,
     "tileSize": 256,
     "overlap": 0,
@@ -312,7 +312,7 @@ window.GALLERY_MANIFEST = [
     "dzi": {
       "Image": {
         "xmlns": "http://schemas.microsoft.com/deepzoom/2008",
-        "Url": "https://cangfengcore.lidmwork.workers.dev/tiles/shanghai_files/",
+        "Url": "tiles/shanghai_files/",
         "Format": "webp",
         "Overlap": "0",
         "TileSize": "256",
@@ -339,7 +339,7 @@ window.GALLERY_MANIFEST = [
     "height": 2532,
     "aspectRatio": 0.4621,
     "thumb": "thumbs/city_papercut_14pro.webp",
-    "tileUrl": "https://cangfengcore.lidmwork.workers.dev/tiles/city_papercut_14pro_files/",
+    "tileUrl": "tiles/city_papercut_14pro_files/",
     "maxLevel": 12,
     "tileSize": 256,
     "overlap": 0,
@@ -347,7 +347,7 @@ window.GALLERY_MANIFEST = [
     "dzi": {
       "Image": {
         "xmlns": "http://schemas.microsoft.com/deepzoom/2008",
-        "Url": "https://cangfengcore.lidmwork.workers.dev/tiles/city_papercut_14pro_files/",
+        "Url": "tiles/city_papercut_14pro_files/",
         "Format": "webp",
         "Overlap": "0",
         "TileSize": "256",
@@ -374,7 +374,7 @@ window.GALLERY_MANIFEST = [
     "height": 1668,
     "aspectRatio": 1.3333,
     "thumb": "thumbs/chengdu_papercut_ipad.webp",
-    "tileUrl": "https://cangfengcore.lidmwork.workers.dev/tiles/chengdu_papercut_ipad_files/",
+    "tileUrl": "tiles/chengdu_papercut_ipad_files/",
     "maxLevel": 12,
     "tileSize": 256,
     "overlap": 0,
@@ -382,7 +382,7 @@ window.GALLERY_MANIFEST = [
     "dzi": {
       "Image": {
         "xmlns": "http://schemas.microsoft.com/deepzoom/2008",
-        "Url": "https://cangfengcore.lidmwork.workers.dev/tiles/chengdu_papercut_ipad_files/",
+        "Url": "tiles/chengdu_papercut_ipad_files/",
         "Format": "webp",
         "Overlap": "0",
         "TileSize": "256",
@@ -405,9 +405,9 @@ window.GALLERY_MANIFEST = [
     "tags": [],
     "width": 7086,
     "height": 3543,
-    "aspectRatio": 2,
+    "aspectRatio": 2.0,
     "thumb": "thumbs/layout_pattern_02.webp",
-    "tileUrl": "https://cangfengcore.lidmwork.workers.dev/tiles/layout_pattern_02_files/",
+    "tileUrl": "tiles/layout_pattern_02_files/",
     "maxLevel": 13,
     "tileSize": 256,
     "overlap": 0,
@@ -415,7 +415,7 @@ window.GALLERY_MANIFEST = [
     "dzi": {
       "Image": {
         "xmlns": "http://schemas.microsoft.com/deepzoom/2008",
-        "Url": "https://cangfengcore.lidmwork.workers.dev/tiles/layout_pattern_02_files/",
+        "Url": "tiles/layout_pattern_02_files/",
         "Format": "webp",
         "Overlap": "0",
         "TileSize": "256",
@@ -428,19 +428,24 @@ window.GALLERY_MANIFEST = [
   },
   {
     "id": "jinjiang_greenway_section",
-    "title": "锦江绿道_黄龙溪_剖面",
+    "title": "成都城市空间艺术剪纸",
     "filename": "锦江绿道_黄龙溪_剖面.png",
     "category": "original",
     "categoryName": "原创图片分享",
     "subCategory": "原创设计",
-    "description": "",
-    "author": "原创作者",
-    "tags": [],
+    "description": "本作基于 iPad Pro 10.5 英寸物理画幅创作，采用数字剪纸视觉语言解构并重塑了成都市区路网肌理与建筑密度分布，表现巴蜀平原当代空间生长态势。",
+    "author": "原创制图",
+    "tags": [
+      "城市肌理",
+      "空间形态",
+      "成都",
+      "矢量艺术"
+    ],
     "width": 1771,
     "height": 2362,
     "aspectRatio": 0.7498,
     "thumb": "thumbs/jinjiang_greenway_section.webp",
-    "tileUrl": "https://cangfengcore.lidmwork.workers.dev/tiles/jinjiang_greenway_section_files/",
+    "tileUrl": "tiles/jinjiang_greenway_section_files/",
     "maxLevel": 12,
     "tileSize": 256,
     "overlap": 0,
@@ -448,7 +453,7 @@ window.GALLERY_MANIFEST = [
     "dzi": {
       "Image": {
         "xmlns": "http://schemas.microsoft.com/deepzoom/2008",
-        "Url": "https://cangfengcore.lidmwork.workers.dev/tiles/jinjiang_greenway_section_files/",
+        "Url": "tiles/jinjiang_greenway_section_files/",
         "Format": "webp",
         "Overlap": "0",
         "TileSize": "256",
