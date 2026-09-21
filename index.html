@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="portal-html">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collection Gallery · 典藏画廊</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="data/themes.js"></script>
+  <script src="data/manifest.js"></script>
+  <script src="assets/theme.js"></script>
+  <script src="vendor/openseadragon.min.js"></script>
+</head>
+<body data-page="portal">
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-badge"></span>
+        <div class="brand-text">
+          <h1 class="brand-title">COLLECTION</h1>
+          <span class="brand-subtitle">Rijksmuseum Style · Deep Zoom WebP</span>
+        </div>
+      </div>
+
+      <div class="header-meta">
+        <div class="stat-pill">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <span id="collectionCount">13</span> 作品 (<span id="collectionBreakdown">GIS 8 · 原创 5</span>)
+        </div>
+        <div class="divider"></div>
+        <button class="icon-btn theme-toggle-btn" id="btnToggleTheme" title="切换主题模式" aria-label="切换主题模式">
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Portal Hero Entrance (100% Fullscreen Viewport Fill · 纯净双画作分屏门面) -->
+  <main class="portal-hero-container" id="heroSection">
+    <div class="portal-wrapper">
+      <!-- Left Card: 网上GIS图片 -->
+      <div class="portal-card" id="portalCardGis" role="link" tabindex="0" data-href="gis.html" aria-label="网上GIS图片">
+        <img class="portal-bg" src="assets/covers/cover_gis.webp" alt="网上GIS图片" loading="eager" />
+        <div class="portal-scrim"></div>
+        <div class="portal-content">
+          <h2 class="portal-title">网上 GIS</h2>
+          <div class="portal-action-row">
+            <span class="portal-enter-btn">
+              <span>进入GIS展厅</span>
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Card: 原创图片 -->
+      <div class="portal-card" id="portalCardOriginal" role="link" tabindex="0" data-href="original.html" aria-label="原创精选">
+        <img class="portal-bg" src="assets/covers/cover_original.webp" alt="原创精选" loading="eager" />
+        <div class="portal-scrim"></div>
+        <div class="portal-content">
+          <h2 class="portal-title">原创精选</h2>
+          <div class="portal-action-row">
+            <span class="portal-enter-btn">
+              <span>进入原创展厅</span>
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll Down Indicator -->
+    <button type="button" class="portal-scroll-hint" id="scrollHint" title="向下漫游" aria-label="向下漫游">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+  </main>
+
+  <!-- Floating Side Dot Pagination (页面三段顶点导航) -->
+  <nav class="portal-page-nav" id="portalPageNav" aria-label="页面三段分屏导航">
+    <button class="page-nav-dot active" data-target="heroSection" title="首页门面" aria-label="首页门面">
+      <span class="dot-tooltip">首页门面</span>
+    </button>
+    <button class="page-nav-dot" data-target="exploreSection" title="专题分类" aria-label="专题分类">
+      <span class="dot-tooltip">专题分类</span>
+    </button>
+    <button class="page-nav-dot" data-target="randomSection" title="随机画作" aria-label="随机画作">
+      <span class="dot-tooltip">随机画作</span>
+    </button>
+  </nav>
+
+  <!-- Section 1: Down-scroll Topic Taxonomy Explorer -->
+  <section class="portal-section" id="exploreSection">
+    <div class="section-header">
+      <div class="section-title-wrap">
+        <h3 class="section-title">专题分类</h3>
+      </div>
+    </div>
+
+    <div class="taxonomy-clusters">
+      <!-- Cluster 1: 网上GIS空间测绘专题 -->
+      <div class="taxonomy-cluster">
+        <div class="cluster-head">
+          <div class="cluster-title-group">
+            <span class="cluster-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+            <h4 class="cluster-title">网上GIS空间测绘专题</h4>
+          </div>
+          <div role="link" tabindex="0" data-href="gis.html" class="cluster-link" title="进入GIS展厅">
+            <span>进入GIS展厅</span>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </div>
+        </div>
+        <div class="taxonomy-chip-list">
+          <div class="taxonomy-card-chip" data-category="gis" data-sub="Verygoogmaps" data-artwork-id="heqacogw8ae_dtn_463ef9b0" tabindex="0" title="点击微缩图直接看代表作 · 点击卡片筛选 Verygoogmaps 专题">
+            <div class="chip-thumb-wrap" title="全屏深览代表作 · HEqAcOgW8AE_Dtn">
+              <img src="thumbs/heqacogw8ae_dtn_463ef9b0.webp" alt="Verygoogmaps 代表图" class="chip-thumb-img" loading="lazy" />
+            </div>
+            <div class="chip-info">
+              <div class="chip-title-row">
+                <span class="chip-name">Verygoogmaps</span>
+                <span class="chip-count">4 幅</span>
+              </div>
+              <span class="chip-desc">全球高精遥感 · 极端地表肌理</span>
+            </div>
+          </div>
+          <div class="taxonomy-card-chip" data-category="gis" data-sub="标准地图 · China · 安徽" data-artwork-id="artwork_d699417c" tabindex="0" title="点击微缩图直接看代表作 · 点击卡片筛选 安徽要素图">
+            <div class="chip-thumb-wrap" title="全屏深览代表作 · 安徽省-公路交通要素图">
+              <img src="thumbs/artwork_d699417c.webp" alt="标准地图 · 安徽 代表图" class="chip-thumb-img" loading="lazy" />
+            </div>
+            <div class="chip-info">
+              <div class="chip-title-row">
+                <span class="chip-name">标准地图 · 安徽</span>
+                <span class="chip-count">1 幅</span>
+              </div>
+              <span class="chip-desc">安徽省公路交通要素专题图</span>
+            </div>
+          </div>
+          <div class="taxonomy-card-chip" data-category="gis" data-sub="标准地图 · China · 黑龙江" data-artwork-id="8_3c808d73" tabindex="0" title="点击微缩图直接看代表作 · 点击卡片筛选 黑龙江地图">
+            <div class="chip-thumb-wrap" title="全屏深览代表作 · 黑龙江省标准地图-基础要素版8开">
+              <img src="thumbs/8_3c808d73.webp" alt="标准地图 · 黑龙江 代表图" class="chip-thumb-img" loading="lazy" />
+            </div>
+            <div class="chip-info">
+              <div class="chip-title-row">
+                <span class="chip-name">标准地图 · 黑龙江</span>
+                <span class="chip-count">2 幅</span>
+              </div>
+              <span class="chip-desc">黑龙江基础要素版与抚远测绘</span>
+            </div>
+          </div>
+          <div class="taxonomy-card-chip" data-category="gis" data-sub="标准地图 · Italy" data-artwork-id="094_095_b18da34a" tabindex="0" title="点击微缩图直接看代表作 · 点击卡片筛选 意大利标准地图">
+            <div class="chip-thumb-wrap" title="全屏深览代表作 · 094-095 意大利">
+              <img src="thumbs/094_095_b18da34a.webp" alt="标准地图 · 意大利 代表图" class="chip-thumb-img" loading="lazy" />
+            </div>
+            <div class="chip-info">
+              <div class="chip-title-row">
+                <span class="chip-name">标准地图 · 意大利</span>
+                <span class="chip-count">1 幅</span>
+              </div>
+              <span class="chip-desc">欧洲地形水系与行政区划图</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cluster 2: 原创设计空间构图专题 -->
+      <div class="taxonomy-cluster">
+        <div class="cluster-head">
+          <div class="cluster-title-group">
+            <span class="cluster-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span>
+            <h4 class="cluster-title">原创设计空间构图专题</h4>
+          </div>
+          <div role="link" tabindex="0" data-href="original.html" class="cluster-link" title="进入原创展厅">
+            <span>进入原创展厅</span>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </div>
+        </div>
+        <div class="taxonomy-chip-list">
+          <div class="taxonomy-card-chip" data-category="original" data-sub="城市肌理" data-artwork-id="shanghai" tabindex="0" title="点击微缩图直接看代表作 · 点击卡片筛选 城市肌理专题">
+            <div class="chip-thumb-wrap" title="全屏深览代表作 · 上海市中心城区空间肌理">
+              <img src="thumbs/shanghai.webp" alt="城市肌理 代表图" class="chip-thumb-img" loading="lazy" />
+            </div>
+            <div class="chip-info">
+              <div class="chip-title-row">
+                <span class="chip-name">城市肌理 · 空间演变</span>
+                <span class="chip-count">3 幅</span>
+              </div>
+              <span class="chip-desc">上海核心区建筑密度形态测绘</span>
+            </div>
+          </div>
+          <div class="taxonomy-card-chip" data-category="original" data-sub="城市肌理" data-artwork-id="city_papercut_14pro" tabindex="0" title="点击微缩图直接看代表作 · 点击卡片筛选 剪纸测绘专题">
+            <div class="chip-thumb-wrap" title="全屏深览代表作 · 城市剪纸-14PRO">
+              <img src="thumbs/city_papercut_14pro.webp" alt="数字剪纸 代表图" class="chip-thumb-img" loading="lazy" />
+            </div>
+            <div class="chip-info">
+              <div class="chip-title-row">
+                <span class="chip-name">数字剪纸 · 矢量构成</span>
+                <span class="chip-count">3 幅</span>
+              </div>
+              <span class="chip-desc">移动端与平板端城市剪纸构成</span>
+            </div>
+          </div>
+          <div class="taxonomy-card-chip" data-category="original" data-sub="原创设计" data-artwork-id="jinjiang_greenway_section" tabindex="0" title="点击微缩图直接看代表作 · 点击卡片筛选 规划断面专题">
+            <div class="chip-thumb-wrap" title="全屏深览代表作 · 锦江绿道_黄龙溪_剖面">
+              <img src="thumbs/jinjiang_greenway_section.webp" alt="生态断面 代表图" class="chip-thumb-img" loading="lazy" />
+            </div>
+            <div class="chip-info">
+              <div class="chip-title-row">
+                <span class="chip-name">生态断面 · 规划制图</span>
+                <span class="chip-count">2 幅</span>
+              </div>
+              <span class="chip-desc">黄龙溪锦江绿道剖面分析制图</span>
+            </div>
+          </div>
+          <div class="taxonomy-card-chip" data-category="original" data-sub="原创设计" data-artwork-id="layout_pattern_02" tabindex="0" title="点击微缩图直接看代表作 · 点击卡片筛选 构图版式专题">
+            <div class="chip-thumb-wrap" title="全屏深览代表作 · 布局方式2">
+              <img src="thumbs/layout_pattern_02.webp" alt="构图版式 代表图" class="chip-thumb-img" loading="lazy" />
+            </div>
+            <div class="chip-info">
+              <div class="chip-title-row">
+                <span class="chip-name">构图版式 · 空间网格</span>
+                <span class="chip-count">2 幅</span>
+              </div>
+              <span class="chip-desc">多画幅排版与网格模数构成</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dimension Quick Filters -->
+    <div class="dim-tag-row">
+      <span class="dim-tag-label">画幅构图:</span>
+      <button class="filter-chip active" data-dim="all">全部</button>
+      <button class="filter-chip" data-dim="wide">横幅</button>
+      <button class="filter-chip" data-dim="tall">条幅</button>
+    </div>
+  </section>
+
+  <!-- Section 3: Random Curated Discovery Window (单屏视窗展台) -->
+  <section class="portal-section" id="randomSection">
+    <div class="section-header random-section-header">
+      <div class="section-title-wrap">
+        <div class="random-title-row">
+          <h3 class="section-title">随机画作</h3>
+          <span class="random-badge" id="randomPoolBadge">全库 13 幅</span>
+        </div>
+        <p class="section-desc">全库跨展厅随机灵感流 · 点击视窗进入全屏无缝瀑布流</p>
+      </div>
+      <div class="section-actions">
+        <button class="btn-shuffle" id="btnShuffleRandom" title="随机洗牌换一批">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <span>换一批</span>
+        </button>
+        <button class="btn-open-stream" id="btnOpenStreamTop" title="进入全屏瀑布流">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+          <span>进入全屏瀑布流</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Framed Showcase Window (单屏固定高度视窗展台) -->
+    <div class="random-window-stage" id="randomWindowStage" role="button" tabindex="0" title="点击进入全屏随机瀑布流">
+      <!-- Dynamic 4-card preview mosaic track -->
+      <div class="random-preview-track" id="randomPreviewTrack">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+
+      <!-- Center Floating Glassmorphic CTA Banner -->
+      <div class="random-window-scrim">
+        <div class="random-window-cta">
+          <div class="random-cta-badge">
+            <span class="pulse-dot"></span>
+            <span>随机推荐视窗</span>
+          </div>
+          <h4 class="random-cta-title">全屏随机瀑布流</h4>
+          <p class="random-cta-desc">13 幅空间测绘与原创设计馆藏 · 支持全量即时洗牌与分类筛选</p>
+          <button class="btn-enter-stream-banner" id="btnOpenStreamBanner" tabindex="-1">
+            <span>立即进入瀑布流</span>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fullscreen Random Masonry Stream Modal (全屏随机瀑布流模态窗口) -->
+  <div class="stream-modal" id="streamModal" aria-hidden="true" role="dialog" aria-label="全屏随机瀑布流">
+    <div class="stream-header">
+      <div class="stream-header-left">
+        <button class="stream-exit-btn" id="btnCloseStream" title="退出全屏瀑布流 (Esc)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span class="stream-exit-text">退出全屏</span>
+        </button>
+        <div class="stream-title-group">
+          <h3 class="stream-title">全屏随机瀑布流</h3>
+          <span class="stream-badge" id="streamItemCountBadge">13 幅</span>
+        </div>
+      </div>
+
+      <div class="stream-header-center">
+        <div class="stream-filter-tabs">
+          <button class="stream-filter-chip active" data-stream-source="all">全部混搭 (<span id="streamAllCount">13</span>)</button>
+          <button class="stream-filter-chip" data-stream-source="gis">网上GIS (<span id="streamGisCount">8</span>)</button>
+          <button class="stream-filter-chip" data-stream-source="original">原创精选 (<span id="streamOriginalCount">5</span>)</button>
+        </div>
+      </div>
+
+      <div class="stream-header-right">
+        <button class="btn-shuffle" id="btnStreamShuffle" title="打乱洗牌换一批">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <span>换一批</span>
+        </button>
+        <button class="nav-btn" id="btnCloseStreamCross" title="关闭 (Esc)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable Masonry Stream Body -->
+    <div class="stream-body" id="streamBody">
+      <div class="masonry-grid" id="streamGalleryGrid">
+        <!-- Cards dynamically rendered by app.js (0 gap, 0 border-radius) -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Deep Zoom Viewer Modal -->
+  <div class="viewer-modal" id="viewerModal" aria-hidden="true" role="dialog" aria-label="Deep Zoom 展品阅览">
+    <div class="viewer-backdrop" id="viewerBackdrop"></div>
+    <div class="viewer-container">
+      <header class="viewer-header">
+        <div class="viewer-header-left">
+          <button class="nav-btn" id="btnCloseViewer" title="退出阅览 (Esc)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+          <div class="viewer-title-group">
+            <h2 class="viewer-title" id="viewerTitle">作品名称</h2>
+          </div>
+        </div>
+
+        <div class="viewer-header-right">
+          <button class="nav-btn" id="btnPrevArtwork" title="上一幅 (←)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button class="nav-btn" id="btnNextArtwork" title="下一幅 (→)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+          <div class="divider"></div>
+          <button class="nav-btn info-btn" id="btnToggleInfo" title="作品元数据与说明 (I)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="viewer-body">
+        <div class="osd-stage" id="osdStage"></div>
+
+        <!-- Left / Right Edge Navigation Paddles (左右边缘切换画作按钮) -->
+        <button class="viewer-edge-nav edge-prev" id="btnEdgePrev" title="上一幅作品 (←)" aria-label="上一幅作品">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button class="viewer-edge-nav edge-next" id="btnEdgeNext" title="下一幅作品 (→)" aria-label="下一幅作品">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+
+        <div class="viewer-floating-toolbar">
+          <span class="tool-zoom-badge" id="toolZoomBadge" title="当前缩放倍率">100%</span>
+          <button class="tool-btn tool-btn-text" id="toolActualSize" title="1:1 原生像素 (快捷键 1)">1:1</button>
+          <div class="tool-divider"></div>
+          <button class="tool-btn" id="toolZoomIn" title="放大 (+)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+          <button class="tool-btn" id="toolZoomOut" title="缩小 (-)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+          <button class="tool-btn" id="toolReset" title="适应屏幕 (Home)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></button>
+          <button class="tool-btn" id="toolRotate" title="顺时针旋转 90°"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg></button>
+          <button class="tool-btn" id="toolFullscreen" title="全屏视界 (F)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+        </div>
+      </div>
+
+      <aside class="viewer-drawer" id="viewerDrawer">
+        <div class="drawer-header">
+          <h3>展品档案与详情</h3>
+          <button class="drawer-close-btn" id="btnDrawerClose" title="关闭面板">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="drawer-content">
+          <div class="meta-item">
+            <label>作品名称</label>
+            <div class="value strong" id="metaTitle">-</div>
+          </div>
+          <div class="meta-item">
+            <label>分类归属</label>
+            <div class="value" id="metaCategory">-</div>
+          </div>
+          <div class="meta-item" id="metaAuthorBox">
+            <label>作者 / 出处</label>
+            <div class="value highlight" id="metaAuthor">-</div>
+          </div>
+          <div class="meta-item" id="metaColorPaletteBox">
+            <label>主色板 · 提取色系 (点击复制 HEX)</label>
+            <div class="meta-swatches" id="metaColorSwatches">
+              <!-- Dynamically populated by app.js -->
+            </div>
+          </div>
+          <div class="meta-item" id="metaDescBox">
+            <label>作品说明</label>
+            <div class="value meta-desc-text" id="metaDescription">-</div>
+          </div>
+          <div class="meta-item">
+            <label>源文件</label>
+            <div class="value font-mono" id="metaFilename">-</div>
+          </div>
+          <div class="meta-item">
+            <label>原始分辨率</label>
+            <div class="value font-mono" id="metaResolution">-</div>
+          </div>
+          <div class="meta-item">
+            <label>构图纵横比</label>
+            <div class="value" id="metaAspect">-</div>
+          </div>
+          <div class="meta-item">
+            <label>超高清层级</label>
+            <div class="value font-mono" id="metaLevels">-</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

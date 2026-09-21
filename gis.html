@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网上GIS图片分享 · Collection Gallery</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="data/themes.js"></script>
+  <script src="data/manifest.js"></script>
+  <script src="assets/theme.js"></script>
+  <script src="vendor/openseadragon.min.js"></script>
+</head>
+<body data-page="gis">
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <a href="index.html" class="nav-back-link" title="返回门户入口">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>门户首页</span>
+        </a>
+        <div class="divider"></div>
+        <div class="brand-text">
+          <h1 class="brand-title">COLLECTION · 网上GIS图片分享</h1>
+          <span class="brand-subtitle">空间制图 · 测绘要素 · 卫星遥感</span>
+        </div>
+      </div>
+
+      <div class="header-meta">
+        <a href="original.html" class="nav-switch-link" title="前往原创图片专区">
+          <span>前往原创图片专区</span>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </a>
+        <div class="divider"></div>
+        <div class="stat-pill">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <span id="pageItemCount">8</span> 幅作品
+        </div>
+        <div class="view-controls">
+          <button class="view-btn active" id="btnGridDense" title="多列紧凑" aria-label="紧凑布局">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          </button>
+          <button class="view-btn" id="btnGridComfort" title="大图沉浸" aria-label="宽松布局">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="8" rx="1"/><rect x="3" y="13" width="18" height="8" rx="1"/></svg>
+          </button>
+        </div>
+        <div class="divider"></div>
+        <button class="icon-btn theme-toggle-btn" id="btnToggleTheme" title="切换主题模式" aria-label="切换主题模式">
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sub-bar & Subcategory Filter Chips -->
+  <section class="gallery-subbar">
+    <div class="subbar-inner">
+      <div class="filter-group" id="filterGroup">
+        <span class="filter-label">筛选</span>
+        <button class="filter-chip active" data-filter="all">全部展示</button>
+        <!-- Dynamic subcategory chips injected by app.js -->
+        <button class="filter-chip" data-filter="wide">横幅宽屏</button>
+        <button class="filter-chip" data-filter="tall">条幅立轴</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Main Full-Width Justified Grid -->
+  <main class="gallery-main">
+    <div class="masonry-grid" id="galleryGrid">
+      <!-- Dynamic GIS Artwork Cards -->
+    </div>
+  </main>
+
+  <!-- Fullscreen Deep Zoom Viewer Modal -->
+  <div class="viewer-modal" id="viewerModal" aria-hidden="true" role="dialog" aria-label="Deep Zoom 展品阅览">
+    <div class="viewer-backdrop" id="viewerBackdrop"></div>
+    <div class="viewer-container">
+      <header class="viewer-header">
+        <div class="viewer-header-left">
+          <button class="nav-btn" id="btnCloseViewer" title="退出阅览 (Esc)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+          <div class="viewer-title-group">
+            <h2 class="viewer-title" id="viewerTitle">作品名称</h2>
+          </div>
+        </div>
+
+        <div class="viewer-header-right">
+          <button class="nav-btn" id="btnPrevArtwork" title="上一幅 (←)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button class="nav-btn" id="btnNextArtwork" title="下一幅 (→)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+          <div class="divider"></div>
+          <button class="nav-btn info-btn" id="btnToggleInfo" title="作品元数据与说明 (I)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="viewer-body">
+        <div class="osd-stage" id="osdStage"></div>
+
+        <!-- Left / Right Edge Navigation Paddles (左右边缘切换画作按钮) -->
+        <button class="viewer-edge-nav edge-prev" id="btnEdgePrev" title="上一幅作品 (←)" aria-label="上一幅作品">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button class="viewer-edge-nav edge-next" id="btnEdgeNext" title="下一幅作品 (→)" aria-label="下一幅作品">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+
+        <div class="viewer-floating-toolbar">
+          <span class="tool-zoom-badge" id="toolZoomBadge" title="当前缩放倍率">100%</span>
+          <button class="tool-btn tool-btn-text" id="toolActualSize" title="1:1 原生像素 (快捷键 1)">1:1</button>
+          <div class="tool-divider"></div>
+          <button class="tool-btn" id="toolZoomIn" title="放大 (+)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+          <button class="tool-btn" id="toolZoomOut" title="缩小 (-)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
+          <button class="tool-btn" id="toolReset" title="适应屏幕 (Home)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></button>
+          <button class="tool-btn" id="toolRotate" title="顺时针旋转 90°"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg></button>
+          <button class="tool-btn" id="toolFullscreen" title="全屏视界 (F)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+        </div>
+      </div>
+
+      <aside class="viewer-drawer" id="viewerDrawer">
+        <div class="drawer-header">
+          <h3>展品档案与详情</h3>
+          <button class="drawer-close-btn" id="btnDrawerClose" title="关闭面板">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="drawer-content">
+          <div class="meta-item">
+            <label>作品名称</label>
+            <div class="value strong" id="metaTitle">-</div>
+          </div>
+          <div class="meta-item">
+            <label>分类归属</label>
+            <div class="value" id="metaCategory">-</div>
+          </div>
+          <div class="meta-item" id="metaAuthorBox">
+            <label>作者 / 出处</label>
+            <div class="value highlight" id="metaAuthor">-</div>
+          </div>
+          <div class="meta-item" id="metaColorPaletteBox">
+            <label>主色板 · 提取色系 (点击复制 HEX)</label>
+            <div class="meta-swatches" id="metaColorSwatches">
+              <!-- Dynamically populated by app.js -->
+            </div>
+          </div>
+          <div class="meta-item" id="metaDescBox">
+            <label>作品说明</label>
+            <div class="value meta-desc-text" id="metaDescription">-</div>
+          </div>
+          <div class="meta-item">
+            <label>源文件</label>
+            <div class="value font-mono" id="metaFilename">-</div>
+          </div>
+          <div class="meta-item">
+            <label>原始分辨率</label>
+            <div class="value font-mono" id="metaResolution">-</div>
+          </div>
+          <div class="meta-item">
+            <label>构图纵横比</label>
+            <div class="value" id="metaAspect">-</div>
+          </div>
+          <div class="meta-item">
+            <label>超高清层级</label>
+            <div class="value font-mono" id="metaLevels">-</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
