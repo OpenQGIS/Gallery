@@ -1,0 +1,18 @@
+# Security: Master images and slice scripts strictly isolated
+pic/
+*.py
+*.pyc
+__pycache__/
+
+# Security: Original CangFengCore artworks must NEVER be committed here
+tiles/shanghai_files/
+tiles/city_papercut_14pro_files/
+tiles/chengdu_papercut_ipad_files/
+tiles/layout_pattern_02_files/
+tiles/jinjiang_greenway_section_files/
+
+# OS and Temp
+.DS_Store
+Thumbs.db
+*.bak
+*.tmp
