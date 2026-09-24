@@ -38,6 +38,7 @@
     if (window.GALLERY_MANIFEST) {
       setupData(window.GALLERY_MANIFEST);
       routePage();
+      checkUrlDeepLink();
       return;
     }
 
@@ -47,6 +48,7 @@
       const data = await res.json();
       setupData(data);
       routePage();
+      checkUrlDeepLink();
     } catch (err) {
       console.error('Failed to load gallery manifest:', err);
       const grid = document.getElementById('galleryGrid') || document.getElementById('randomGalleryGrid');
@@ -839,6 +841,12 @@
       });
     }
 
+    const shareBtn = document.getElementById('btnShareArtwork');
+    if (shareBtn) shareBtn.addEventListener('click', shareCurrentArtwork);
+
+    const copyShareUrlBtn = document.getElementById('btnCopyShareUrl');
+    if (copyShareUrlBtn) copyShareUrlBtn.addEventListener('click', shareCurrentArtwork);
+
     const toolActualSize = document.getElementById('toolActualSize');
     if (toolActualSize) {
       toolActualSize.addEventListener('click', () => {
@@ -977,6 +985,28 @@
         case 'I':
           if (toggleInfoBtn) toggleInfoBtn.click();
           break;
+        case 's':
+        case 'S':
+          shareCurrentArtwork();
+          break;
+      }
+    });
+
+    window.addEventListener('popstate', () => {
+      const modalEl = document.getElementById('viewerModal');
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id') || urlParams.get('art');
+      if (id) {
+        const item = findArtworkByQuery(id);
+        if (item) {
+          if (!modalEl || !modalEl.classList.contains('open') || currentFilteredItems[currentViewerIndex]?.id !== item.id) {
+            openViewerByItem(item);
+          }
+        }
+      } else {
+        if (modalEl && modalEl.classList.contains('open')) {
+          closeViewer(false);
+        }
       }
     });
 
@@ -990,12 +1020,13 @@
   }
 
   function openViewerByItem(item) {
-    const idx = currentFilteredItems.findIndex(i => i.id === item.id);
-    if (idx !== -1) {
-      currentViewerIndex = idx;
-    } else {
-      currentViewerIndex = 0;
+    if (!item) return;
+    let idx = currentFilteredItems.findIndex(i => i.id === item.id);
+    if (idx === -1) {
+      currentFilteredItems.unshift(item);
+      idx = 0;
     }
+    currentViewerIndex = idx;
     showArtwork(item);
   }
 
@@ -1076,9 +1107,18 @@
       });
     }
 
+    const mShareUrl = document.getElementById('metaShareUrl');
+    const shareUrl = getShareUrlForItem(item);
+    if (mShareUrl) {
+      mShareUrl.textContent = shareUrl;
+      mShareUrl.title = shareUrl;
+    }
+
     modalEl.classList.add('open');
     modalEl.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+
+    updateBrowserUrl(item);
 
     loadOpenSeadragon(item);
   }
@@ -1316,7 +1356,7 @@
     if (stageEl) stageEl.style.backgroundColor = stageBg;
   }
 
-  function closeViewer() {
+  function closeViewer(updateHistory = true) {
     const modalEl = document.getElementById('viewerModal');
     if (!modalEl) return;
 
@@ -1343,6 +1383,147 @@
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
     }
+
+    if (updateHistory) {
+      clearBrowserUrl();
+    }
+  }
+
+  /* -------------------------------------------------------------
+     4. Single Artwork Direct Share & Deep Linking
+     ------------------------------------------------------------- */
+  function getShareUrlForItem(item) {
+    if (!item) return window.location.href;
+    try {
+      const url = new URL(window.location.href);
+      const targetPage = item.category === 'gis' ? 'gis.html' : 'original.html';
+      if (url.pathname.endsWith('.html')) {
+        url.pathname = url.pathname.replace(/[^/]+\.html$/, targetPage);
+      } else {
+        url.pathname = url.pathname.replace(/\/+$/, '') + '/' + targetPage;
+      }
+      url.searchParams.delete('art');
+      url.searchParams.set('id', item.id);
+      url.hash = '';
+      return url.toString();
+    } catch (e) {
+      const targetPage = item.category === 'gis' ? 'gis.html' : 'original.html';
+      return targetPage + '?id=' + encodeURIComponent(item.id);
+    }
+  }
+
+  function shareCurrentArtwork() {
+    if (currentViewerIndex < 0 || !currentFilteredItems[currentViewerIndex]) return;
+    const item = currentFilteredItems[currentViewerIndex];
+    const url = getShareUrlForItem(item);
+    copyToClipboard(url);
+
+    const shareBtn = document.getElementById('btnShareArtwork');
+    if (shareBtn) {
+      shareBtn.classList.add('copied');
+      setTimeout(() => shareBtn.classList.remove('copied'), 1500);
+    }
+
+    const copyBtn = document.getElementById('btnCopyShareUrl');
+    if (copyBtn) {
+      copyBtn.textContent = '已复制!';
+      copyBtn.classList.add('copied');
+      setTimeout(() => {
+        copyBtn.textContent = '复制';
+        copyBtn.classList.remove('copied');
+      }, 1500);
+    }
+
+    showToast('已复制画作《' + item.title + '》直链');
+  }
+
+  function updateBrowserUrl(item) {
+    if (!item) return;
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('id') !== item.id) {
+        url.searchParams.delete('art');
+        url.searchParams.set('id', item.id);
+        window.history.replaceState({ artworkId: item.id }, '', url.toString());
+      }
+    } catch (e) {}
+  }
+
+  function clearBrowserUrl() {
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('id') || url.searchParams.has('art') || window.location.hash) {
+        url.searchParams.delete('id');
+        url.searchParams.delete('art');
+        url.hash = '';
+        window.history.replaceState(null, '', url.toString());
+      }
+    } catch (e) {}
+  }
+
+  function findArtworkByQuery(query) {
+    if (!query) return null;
+    let q = '';
+    try {
+      q = decodeURIComponent(String(query)).trim().toLowerCase();
+    } catch (e) {
+      q = String(query).trim().toLowerCase();
+    }
+    if (!q) return null;
+
+    return galleryItems.find(item => {
+      if (item.id && item.id.toLowerCase() === q) return true;
+      if (Array.isArray(item.aliases) && item.aliases.some(a => String(a).trim().toLowerCase() === q)) return true;
+      if (item.title && item.title.trim().toLowerCase() === q) return true;
+      if (item.filename) {
+        const fn = item.filename.trim().toLowerCase();
+        if (fn === q) return true;
+        if (fn.replace(/\.[^.]+$/, '') === q) return true;
+      }
+      return false;
+    });
+  }
+
+  function checkUrlDeepLink() {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      let target = urlParams.get('id') || urlParams.get('art');
+      if (!target && window.location.hash) {
+        const hash = window.location.hash.replace(/^#\/?/, '');
+        if (hash.startsWith('id=')) target = hash.replace('id=', '');
+        else if (hash.startsWith('art=')) target = hash.replace('art=', '');
+        else target = hash;
+      }
+      if (target) {
+        const match = findArtworkByQuery(target);
+        if (match) {
+          setTimeout(() => {
+            openViewerByItem(match);
+          }, 120);
+          return true;
+        }
+      }
+    } catch (e) {
+      console.warn('Error checking URL deep link:', e);
+    }
+    return false;
+  }
+
+  let toastTimer = null;
+  function showToast(message, duration = 2200) {
+    let toast = document.getElementById('galleryToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'galleryToast';
+      toast.className = 'gallery-toast';
+      document.body.appendChild(toast);
+    }
+    toast.innerHTML = '<span class="toast-indicator"></span><span class="toast-text">' + escapeHtml(message) + '</span>';
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+    }, duration);
   }
 
   /* -------------------------------------------------------------
