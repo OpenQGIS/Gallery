@@ -1017,6 +1017,80 @@
         if (stage) stage.style.backgroundColor = isDark ? '#07080b' : '#e5e8ed';
       }
     });
+
+    // 初始化底部工具栏鼠标磁吸跟随特效
+    initMagneticDock();
+  }
+
+  /* -------------------------------------------------------------
+     Magnetic Cursor Follow Dock (底部悬浮工具栏磁吸微动物理特效)
+     参考 Framer Motion / Apple Dock 物理微动吸附与弹簧回弹算法
+     ------------------------------------------------------------- */
+  function initMagneticDock() {
+    const dock = document.querySelector('.viewer-floating-toolbar');
+    if (!dock || dock.dataset.magneticBound) return;
+    dock.dataset.magneticBound = 'true';
+
+    // 触屏设备（移动端/平板）自然支持直接触控，跳过鼠标磁吸微动以确保零开销
+    if (window.matchMedia('(hover: none)').matches) return;
+
+    const buttons = dock.querySelectorAll('.tool-btn');
+    buttons.forEach(btn => {
+      let rafId = null;
+      let targetX = 0, targetY = 0;
+      let currentX = 0, currentY = 0;
+      let isHovered = false;
+      const innerTarget = btn.querySelector('.icon, .tool-btn-text, span') || btn.firstElementChild;
+
+      function renderFrame() {
+        // 高性能 Spring-Lerp 弹性阻尼算法（刚度与阻尼系数平衡在 0.18）
+        currentX += (targetX - currentX) * 0.18;
+        currentY += (targetY - currentY) * 0.18;
+
+        if (!isHovered && Math.abs(currentX) < 0.05 && Math.abs(currentY) < 0.05) {
+          currentX = 0;
+          currentY = 0;
+          btn.style.transform = '';
+          if (innerTarget) innerTarget.style.transform = '';
+          rafId = null;
+          return;
+        }
+
+        // 按钮主体微位移 (0.35x 磁吸位移)
+        btn.style.transform = 'translate3d(' + (currentX * 0.35).toFixed(2) + 'px, ' + (currentY * 0.35).toFixed(2) + 'px, 0)';
+        // 内部图标微视差深景深跟随 (0.22x 附加位移，产生 3D 浮雕深度感知)
+        if (innerTarget) {
+          innerTarget.style.transform = 'translate3d(' + (currentX * 0.22).toFixed(2) + 'px, ' + (currentY * 0.22).toFixed(2) + 'px, 0)';
+        }
+
+        rafId = requestAnimationFrame(renderFrame);
+      }
+
+      btn.addEventListener('mouseenter', () => {
+        isHovered = true;
+        if (!rafId) rafId = requestAnimationFrame(renderFrame);
+      });
+
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const dx = e.clientX - centerX;
+        const dy = e.clientY - centerY;
+        // 限制最大位移阈值 (±9px)，确保克制不浮夸、精细优雅
+        const maxPull = 9;
+        targetX = Math.max(-maxPull, Math.min(maxPull, dx * 0.48));
+        targetY = Math.max(-maxPull, Math.min(maxPull, dy * 0.48));
+        if (!rafId) rafId = requestAnimationFrame(renderFrame);
+      });
+
+      btn.addEventListener('mouseleave', () => {
+        isHovered = false;
+        targetX = 0;
+        targetY = 0;
+        if (!rafId) rafId = requestAnimationFrame(renderFrame);
+      });
+    });
   }
 
   function openViewerByItem(item) {
@@ -1036,15 +1110,49 @@
     showArtwork(currentFilteredItems[currentViewerIndex]);
   }
 
+  /**
+   * 格式化日期为仅显示年月 (YYYY.MM 或 YYYY)
+   * 兼容 2024.07, 2024.7, 2024-07-15, 2024/07/15, 2024年7月, 2024 等多种格式
+   */
+  function formatYearMonth(rawDate) {
+    if (!rawDate) return '';
+    const str = String(rawDate).trim();
+    const match = str.match(/^(\d{4})[-/.年](\d{1,2})/);
+    if (match) {
+      const year = match[1];
+      const month = String(parseInt(match[2], 10)).padStart(2, '0');
+      return year + '.' + month;
+    }
+    const matchYear = str.match(/^(\d{4})$/);
+    if (matchYear) {
+      return matchYear[1];
+    }
+    const timestamp = Date.parse(str);
+    if (!isNaN(timestamp)) {
+      const d = new Date(timestamp);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      return year + '.' + month;
+    }
+    return str;
+  }
+
   function showArtwork(item) {
     const modalEl = document.getElementById('viewerModal');
     if (!modalEl) return;
+
+    modalEl.classList.add('open');
+    modalEl.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    const activeItem = item;
 
     const vTitle = document.getElementById('viewerTitle');
     const vDims = document.getElementById('viewerDims');
     const mTitle = document.getElementById('metaTitle');
     const mCat = document.getElementById('metaCategory');
     const mAuthor = document.getElementById('metaAuthor');
+    const mDate = document.getElementById('metaDate');
+    const mDateBox = document.getElementById('metaDateBox');
     const mDesc = document.getElementById('metaDescription');
     const mDescBox = document.getElementById('metaDescBox');
     const mFile = document.getElementById('metaFilename');
@@ -1058,7 +1166,13 @@
     if (vDims) vDims.style.display = 'none';
     if (mTitle) mTitle.textContent = item.title;
     if (mCat) mCat.textContent = item.categoryName + (item.subCategory ? ' · ' + item.subCategory : '');
-    if (mAuthor) mAuthor.textContent = (item.author || (item.category === 'original' ? '原创作者' : '网络精选')) + (item.year ? ' · ' + item.year : '');
+    if (mAuthor) mAuthor.textContent = item.author || (item.category === 'original' ? '原创作者' : '网络精选');
+
+    // 日期仅显示年月
+    const rawDate = item.date || item.year;
+    const formattedDate = formatYearMonth(rawDate);
+    if (mDate) mDate.textContent = formattedDate || '-';
+    if (mDateBox) mDateBox.style.display = formattedDate ? 'block' : 'none';
 
     if (mDesc) {
       if (item.description && item.description.trim()) {
@@ -1078,8 +1192,9 @@
     if (mSwatches) {
       mSwatches.innerHTML = '<span style="font-size:0.75rem;color:var(--text-muted);font-family:var(--font-mono);">提取色彩中...</span>';
       if (mPaletteBox) mPaletteBox.style.display = 'flex';
-      extractDominantColors(item.thumb, 5, function (colors) {
+      extractDominantColors(item, 5, function (colors) {
         if (!modalEl.classList.contains('open')) return;
+        if (currentViewerIndex >= 0 && currentFilteredItems[currentViewerIndex] && currentFilteredItems[currentViewerIndex].id !== activeItem.id) return;
         mSwatches.innerHTML = '';
         if (!colors || colors.length === 0) {
           if (mPaletteBox) mPaletteBox.style.display = 'none';
@@ -1114,16 +1229,24 @@
       mShareUrl.title = shareUrl;
     }
 
-    modalEl.classList.add('open');
-    modalEl.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-
     updateBrowserUrl(item);
 
     loadOpenSeadragon(item);
   }
 
-  function extractDominantColors(imgSrc, maxColors, callback) {
+  function extractDominantColors(target, maxColors, callback) {
+    maxColors = maxColors || 5;
+
+    // 优先采用 Markdown Frontmatter 标定的专属色板 (item.colors || item.color)
+    if (target && typeof target === 'object') {
+      const explicit = target.colors || target.color;
+      if (Array.isArray(explicit) && explicit.length > 0) {
+        callback(explicit.slice(0, maxColors));
+        return;
+      }
+    }
+
+    const imgSrc = (typeof target === 'string') ? target : (target && target.thumb);
     if (!imgSrc) {
       callback([]);
       return;
