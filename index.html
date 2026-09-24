@@ -327,32 +327,11 @@
   <div class="viewer-modal" id="viewerModal" aria-hidden="true" role="dialog" aria-label="Deep Zoom 展品阅览">
     <div class="viewer-backdrop" id="viewerBackdrop"></div>
     <div class="viewer-container">
-      <header class="viewer-header">
-        <div class="viewer-header-left">
-          <button class="nav-btn" id="btnCloseViewer" title="退出阅览 (Esc)">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-          </button>
-          <div class="viewer-title-group">
-            <h2 class="viewer-title" id="viewerTitle">作品名称</h2>
-          </div>
-        </div>
-
-        <div class="viewer-header-right">
-          <button class="nav-btn" id="btnPrevArtwork" title="上一幅 (←)">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-          </button>
-          <button class="nav-btn" id="btnNextArtwork" title="下一幅 (→)">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </button>
-          <div class="divider"></div>
-          <button class="nav-btn info-btn" id="btnToggleInfo" title="作品元数据与说明 (I)">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-          </button>
-          <button class="nav-btn" id="btnShareArtwork" title="分享画作链接 (S)" aria-label="分享画作链接">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-          </button>
-        </div>
-      </header>
+      <!-- Top-Left Floating Artwork & Brand Badge · 地图左上角头像图标与图名 -->
+      <div class="viewer-artwork-badge" id="viewerArtworkBadge">
+        <img class="viewer-artwork-avatar" src="assets/avatar.png" alt="OpenQGIS" />
+        <span class="viewer-artwork-title" id="viewerTitle">作品名称</span>
+      </div>
 
       <div class="viewer-body">
         <div class="osd-stage" id="osdStage"></div>
@@ -378,6 +357,17 @@
           <button class="tool-btn" id="toolReset" title="适应屏幕 (Home)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></button>
           <button class="tool-btn" id="toolRotate" title="顺时针旋转 90°"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg></button>
           <button class="tool-btn" id="toolFullscreen" title="全屏视界 (F)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+          <div class="tool-divider"></div>
+          <button class="tool-btn info-btn" id="btnToggleInfo" title="作品元数据与说明 (I)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          </button>
+          <button class="tool-btn" id="btnShareArtwork" title="分享画作链接 (S)" aria-label="分享画作链接">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+          </button>
+          <div class="tool-divider"></div>
+          <button class="tool-btn" id="btnCloseViewer" title="退出阅览 (Esc)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
         </div>
       </div>
 
