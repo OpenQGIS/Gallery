@@ -847,6 +847,26 @@
     const copyShareUrlBtn = document.getElementById('btnCopyShareUrl');
     if (copyShareUrlBtn) copyShareUrlBtn.addEventListener('click', shareCurrentArtwork);
 
+    const toolToggleLang = document.getElementById('toolToggleLang');
+    if (toolToggleLang) {
+      toolToggleLang.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (window.AtlasI18n && typeof window.AtlasI18n.toggle === 'function') {
+          window.AtlasI18n.toggle();
+        }
+      });
+    }
+
+    const toolToggleTheme = document.getElementById('toolToggleTheme');
+    if (toolToggleTheme) {
+      toolToggleTheme.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (window.GalleryTheme && typeof window.GalleryTheme.toggleTheme === 'function') {
+          window.GalleryTheme.toggleTheme();
+        }
+      });
+    }
+
     const toolActualSize = document.getElementById('toolActualSize');
     if (toolActualSize) {
       toolActualSize.addEventListener('click', () => {
