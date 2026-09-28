@@ -90,33 +90,26 @@
   }
 
   function updateUI() {
-    const buttons = [
-      document.getElementById('btnToggleTheme'),
-      document.getElementById('toolToggleTheme')
-    ].filter(Boolean);
-
-    buttons.forEach(btn => {
-      if (currentTheme === 'dark') {
-        btn.innerHTML = SVG_SUN;
-        btn.title = '切换至浅色模式 (Light Mode)';
-        btn.setAttribute('aria-label', '切换至浅色模式');
-      } else {
-        btn.innerHTML = SVG_MOON;
-        btn.title = '切换至深色模式 (Dark Mode)';
-        btn.setAttribute('aria-label', '切换至深色模式');
-      }
-    });
+    const btn = document.getElementById('btnToggleTheme');
+    if (!btn) return;
+    if (currentTheme === 'dark') {
+      btn.innerHTML = SVG_SUN;
+      btn.title = '切换至浅色模式 (Light Mode)';
+      btn.setAttribute('aria-label', '切换至浅色模式');
+    } else {
+      btn.innerHTML = SVG_MOON;
+      btn.title = '切换至深色模式 (Dark Mode)';
+      btn.setAttribute('aria-label', '切换至深色模式');
+    }
   }
 
-  // Bind toggle buttons after DOM ready
+  // Bind toggle button after DOM ready
   document.addEventListener('DOMContentLoaded', () => {
     updateUI();
-    ['btnToggleTheme', 'toolToggleTheme'].forEach(id => {
-      const btn = document.getElementById(id);
-      if (btn) {
-        btn.addEventListener('click', toggleTheme);
-      }
-    });
+    const btn = document.getElementById('btnToggleTheme');
+    if (btn) {
+      btn.addEventListener('click', toggleTheme);
+    }
   });
 
   // Watch system color scheme changes if not explicitly overridden

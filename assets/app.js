@@ -699,9 +699,11 @@
 
     const subCats = new Set();
     items.forEach(item => {
-      if (item.subCategory && item.subCategory.trim()) {
-        subCats.add(item.subCategory.trim());
-      }
+      const list = Array.isArray(item.subCategories) ? item.subCategories :
+                   (typeof item.subCategory === 'string' ? item.subCategory.split(/[,，、/·]+/).map(s => s.trim()) : []);
+      list.forEach(sub => {
+        if (sub) subCats.add(sub);
+      });
     });
 
     const wideBtn = filterGroup.querySelector('[data-filter="wide"]');
@@ -733,7 +735,15 @@
       currentFilteredItems = [...baseItems];
     } else if (filterKey.startsWith('sub:')) {
       const sub = filterKey.replace('sub:', '');
-      currentFilteredItems = baseItems.filter(i => i.subCategory === sub);
+      currentFilteredItems = baseItems.filter(i => {
+        if (Array.isArray(i.subCategories)) {
+          return i.subCategories.includes(sub);
+        }
+        if (typeof i.subCategory === 'string') {
+          return i.subCategory.split(/[,，、/·]+/).map(s => s.trim()).includes(sub);
+        }
+        return false;
+      });
     } else if (filterKey === 'wide') {
       currentFilteredItems = baseItems.filter(i => i.aspectRatio >= 1.2);
     } else if (filterKey === 'tall') {
@@ -778,7 +788,9 @@
           '<img class="card-img" src="' + item.thumb + '" alt="' + escapeHtml(item.title) + '" loading="lazy" />' +
         '</div>';
     } else {
-      const subCatLabel = item.subCategory ? ('<span class="tag-pill tag-pill-secondary">' + escapeHtml(item.subCategory) + '</span>') : '';
+      const subList = Array.isArray(item.subCategories) ? item.subCategories :
+                      (item.subCategory ? item.subCategory.split(/[,，、/·]+/).map(s => s.trim()) : []);
+      const subCatLabel = subList.map(s => '<span class="tag-pill tag-pill-secondary">' + escapeHtml(s) + '</span>').join('');
 
       card.innerHTML = 
         '<div class="card-media">' +

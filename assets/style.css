@@ -1879,130 +1879,6 @@ body[data-page="portal"] {
   flex-direction: column;
   z-index: 1;
 }
-
-/* -------------------------------------------------------------
-   Top-Left Floating Artwork & Brand Badge (地图左上角头像图标与图名+QMapFlow)
-   ------------------------------------------------------------- */
-.viewer-artwork-badge {
-  position: absolute;
-  top: 18px;
-  left: 20px;
-  z-index: 50;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 16px 8px 10px;
-  background: rgba(15, 18, 24, 0.72);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 12px;
-  box-shadow: 
-    0 8px 24px rgba(0, 0, 0, 0.35),
-    0 2px 6px rgba(0, 0, 0, 0.2);
-  user-select: none;
-  pointer-events: auto;
-  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-  max-width: calc(100vw - 40px);
-}
-
-.viewer-artwork-badge:hover {
-  background: rgba(22, 27, 36, 0.90);
-  border-color: rgba(255, 255, 255, 0.25);
-  transform: translateY(-1px);
-  box-shadow: 
-    0 12px 30px rgba(0, 0, 0, 0.45),
-    0 3px 8px rgba(0, 0, 0, 0.25);
-}
-
-.viewer-artwork-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  object-fit: cover;
-  flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-  display: block;
-}
-
-.viewer-artwork-meta {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 3px;
-  min-width: 0;
-}
-
-.viewer-artwork-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #f8fafc;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 320px;
-  line-height: 1.25;
-}
-
-.viewer-artwork-qmapflow {
-  display: flex;
-  align-items: center;
-  height: 15px;
-  line-height: 1;
-}
-
-.viewer-artwork-qmapflow svg,
-.viewer-qmapflow-img {
-  height: 15px;
-  width: auto;
-  display: block;
-}
-
-:root[data-theme="light"] .viewer-artwork-badge {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  box-shadow: 
-    0 8px 24px rgba(0, 0, 0, 0.10),
-    0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-:root[data-theme="light"] .viewer-artwork-badge:hover {
-  background: rgba(255, 255, 255, 0.96);
-  border-color: rgba(0, 0, 0, 0.2);
-}
-
-:root[data-theme="light"] .viewer-artwork-title {
-  color: #0f172a;
-}
-
-@media (max-width: 768px) {
-  .viewer-artwork-badge {
-    top: 14px;
-    left: 14px;
-    padding: 6px 12px 6px 8px;
-    gap: 10px;
-    border-radius: 10px;
-    max-width: calc(100vw - 28px);
-  }
-  .viewer-artwork-avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 6px;
-  }
-  .viewer-artwork-title {
-    font-size: 0.86rem;
-    max-width: 180px;
-  }
-  .viewer-artwork-qmapflow {
-    height: 13px;
-  }
-  .viewer-artwork-qmapflow svg,
-  .viewer-qmapflow-img {
-    height: 13px;
-  }
-}
-
 .viewer-topbar,
 .viewer-header {
   height: 56px;
@@ -2143,59 +2019,27 @@ body[data-page="portal"] {
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(14, 18, 24, 0.82);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 6px 8px;
-  border-radius: 9999px;
+  background: rgba(19, 23, 30, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  padding: 5px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   gap: 4px;
-  box-shadow: 
-    0px 0.6px 0.6px -1.25px rgba(0, 0, 0, 0.28),
-    0px 2.3px 2.3px -2.5px rgba(0, 0, 0, 0.25),
-    0px 10px 10px -3.75px rgba(0, 0, 0, 0.2),
-    0px 20px 35px -5px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
   z-index: 20;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              background 0.3s ease,
-              border-color 0.3s ease,
-              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
-}
-
-.viewer-float-toolbar:hover,
-.viewer-floating-toolbar:hover {
-  transform: translateX(-50%) translateY(-2px);
-  box-shadow: 
-    0px 0.8px 1px -1px rgba(0, 0, 0, 0.32),
-    0px 3px 4px -2px rgba(0, 0, 0, 0.28),
-    0px 14px 18px -4px rgba(0, 0, 0, 0.24),
-    0px 26px 48px -6px rgba(0, 0, 0, 0.65);
+  transition: all var(--transition-fast);
 }
 
 :root[data-theme="light"] .viewer-float-toolbar,
 :root[data-theme="light"] .viewer-floating-toolbar {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 
-    0px 0.6px 0.6px -1.25px rgba(0, 0, 0, 0.08),
-    0px 2.3px 2.3px -2.5px rgba(0, 0, 0, 0.06),
-    0px 10px 10px -3.75px rgba(0, 0, 0, 0.05),
-    0px 16px 32px -4px rgba(0, 0, 0, 0.12);
-}
-
-:root[data-theme="light"] .viewer-float-toolbar:hover,
-:root[data-theme="light"] .viewer-floating-toolbar:hover {
-  transform: translateX(-50%) translateY(-2px);
-  box-shadow: 
-    0px 0.8px 1px -1px rgba(0, 0, 0, 0.10),
-    0px 3px 4px -2px rgba(0, 0, 0, 0.08),
-    0px 12px 16px -3px rgba(0, 0, 0, 0.08),
-    0px 22px 42px -5px rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  box-shadow: 0 10px 30px rgba(15, 20, 28, 0.12);
 }
 
 .tool-btn {
@@ -2204,27 +2048,12 @@ body[data-page="portal"] {
   color: var(--text-secondary);
   width: 38px;
   height: 38px;
-  border-radius: 9999px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  position: relative;
-  will-change: transform;
-  transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.tool-btn .icon,
-.tool-btn .tool-btn-text,
-.tool-btn span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  will-change: transform;
-  transition: transform 0.08s ease-out;
+  transition: all var(--transition-fast);
 }
 
 .tool-btn:hover {
@@ -2244,8 +2073,7 @@ body[data-page="portal"] {
 }
 
 .tool-btn:active {
-  transform: scale(0.90) !important;
-  transition: transform 0.08s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: scale(0.95);
 }
 
 .tool-zoom-badge {
@@ -2647,112 +2475,3 @@ body[data-page="portal"] {
   opacity: 1 !important;
   transform: translateY(-50%) scale(1.15) !important;
 }
-
-/* -------------------------------------------------------------
-   Single Artwork Direct Share & Toast Notification
-   ------------------------------------------------------------- */
-.nav-btn.copied {
-  color: var(--accent) !important;
-  border-color: rgba(var(--accent-rgb), 0.6) !important;
-  background: var(--accent-subtle) !important;
-}
-
-.meta-share-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg-surface-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 4px 6px 4px 10px;
-  margin-top: 4px;
-}
-
-.meta-share-url {
-  flex: 1;
-  font-size: 0.76rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  user-select: all;
-}
-
-.meta-copy-btn {
-  background: var(--accent-subtle);
-  border: 1px solid rgba(var(--accent-rgb), 0.35);
-  color: var(--accent);
-  font-size: 0.72rem;
-  padding: 3px 10px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-  font-weight: 500;
-}
-
-.meta-copy-btn:hover {
-  background: var(--accent);
-  color: #07080b;
-}
-
-.meta-copy-btn.copied {
-  background: rgba(74, 222, 128, 0.2);
-  color: #4ade80;
-  border-color: rgba(74, 222, 128, 0.4);
-}
-
-.gallery-toast {
-  position: fixed;
-  top: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-20px);
-  background: rgba(18, 22, 28, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
-  color: var(--text-primary);
-  font-size: 0.84rem;
-  padding: 8px 18px;
-  border-radius: 9999px;
-  z-index: 99999;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s ease;
-}
-
-.gallery-toast.show {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
-}
-
-.toast-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.7);
-  flex-shrink: 0;
-}
-
-:root[data-theme="light"] .gallery-toast {
-  background: rgba(255, 255, 255, 0.96);
-  border-color: rgba(0, 0, 0, 0.12);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-  color: #0f141c;
-}
-
-/* 移动端/触屏设备自然支持双指捏合缩放与双击放大，隐藏工具栏放大(+)与缩小(-)冗余按钮，释放屏幕空间 */
-@media (max-width: 768px) {
-  #toolZoomIn,
-  #toolZoomOut {
-    display: none !important;
-  }
-}
-
