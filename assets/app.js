@@ -53,14 +53,9 @@
   async function init() {
     bindAntiTheft();
 
-    if (window.OpenSeadragon && OpenSeadragon.setImageFormatsSupported) {
-      OpenSeadragon.setImageFormatsSupported({ webp: true });
-    }
-
     if (window.GALLERY_MANIFEST) {
       setupData(window.GALLERY_MANIFEST);
       routePage();
-      checkUrlDeepLink();
       return;
     }
 
@@ -70,7 +65,6 @@
       const data = await res.json();
       setupData(data);
       routePage();
-      checkUrlDeepLink();
     } catch (err) {
       console.error('Failed to load gallery manifest:', err);
       const grid = document.getElementById('galleryGrid') || document.getElementById('randomGalleryGrid');
@@ -81,26 +75,18 @@
     }
   }
 
-  const CANGFENG_CORE_CDN = 'https://cangfengcore.lidmwork.workers.dev';
-
   function setupData(rawItems) {
-    const gisCdn = (window.GALLERY_CONFIG && window.GALLERY_CONFIG.gisAssetBaseUrl) || '';
+    const config = window.CABINET_CONFIG || {};
+    const assetBase = (config.assetBaseUrl || '').replace(/\/+$/, '');
+
     galleryItems = rawItems.map((item, idx) => {
       item.globalIndex = idx;
-      if (item.category === 'original') {
-        // 个人原创作品：瓦片统一从 CangFengCore 私有云基座拉取，物理隔离本地切片防泄密
+      if (assetBase) {
+        if (item.thumb && !item.thumb.startsWith('http')) {
+          item.thumb = assetBase + '/' + item.thumb.replace(/^\/+/, '');
+        }
         if (item.tileUrl && !item.tileUrl.startsWith('http')) {
-          item.tileUrl = CANGFENG_CORE_CDN + '/' + item.tileUrl.replace(/^\/+/, '');
-        }
-        if (item.dzi && item.dzi.Image && item.dzi.Image.Url && !item.dzi.Image.Url.startsWith('http')) {
-          item.dzi.Image.Url = CANGFENG_CORE_CDN + '/' + item.dzi.Image.Url.replace(/^\/+/, '');
-        }
-      } else if (item.category === 'gis' && gisCdn) {
-        if (item.tileUrl && !item.tileUrl.startsWith('http')) {
-          item.tileUrl = gisCdn + '/' + item.tileUrl.replace(/^\/+/, '');
-        }
-        if (item.dzi && item.dzi.Image && item.dzi.Image.Url && !item.dzi.Image.Url.startsWith('http')) {
-          item.dzi.Image.Url = gisCdn + '/' + item.dzi.Image.Url.replace(/^\/+/, '');
+          item.tileUrl = assetBase + '/' + item.tileUrl.replace(/^\/+/, '');
         }
       }
       return item;
@@ -120,21 +106,62 @@
      ------------------------------------------------------------- */
   function initPortalPage() {
     const totalCount = galleryItems.length;
-    const gisItems = galleryItems.filter(i => i.category === 'gis');
-    const originalItems = galleryItems.filter(i => i.category === 'original');
+    const verygoogItems = galleryItems.filter(i => (i.subCategory && i.subCategory.includes('Verygoogmaps')));
+    const standardItems = galleryItems.filter(i => (i.subCategory && i.subCategory.includes('标准地图')));
 
     // Update Header and Portal Card Counters
     const totalEl = document.getElementById('collectionCount');
-    const breakdownEl = document.getElementById('collectionBreakdown');
     const portalGisCountEl = document.getElementById('portalGisCount');
     const portalOrigCountEl = document.getElementById('portalOriginalCount');
     const randomTotalCountEl = document.getElementById('randomTotalCount');
 
     if (totalEl) totalEl.textContent = totalCount;
-    if (breakdownEl) breakdownEl.textContent = 'GIS ' + gisItems.length + ' · 原创 ' + originalItems.length;
-    if (portalGisCountEl) portalGisCountEl.textContent = gisItems.length + ' 幅馆藏';
-    if (portalOrigCountEl) portalOrigCountEl.textContent = originalItems.length + ' 幅馆藏';
+    if (portalGisCountEl) portalGisCountEl.textContent = verygoogItems.length + ' 幅馆藏';
+    if (portalOrigCountEl) portalOrigCountEl.textContent = standardItems.length + ' 幅馆藏';
     if (randomTotalCountEl) randomTotalCountEl.textContent = totalCount;
+
+    // Hero Dual Gateways (Clicking enters stream modal filtered by category)
+    const portalCards = document.querySelectorAll('.portal-card');
+    portalCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const sub = card.dataset.sub;
+        if (sub === 'Verygoogmaps') {
+          openStreamModal('gis');
+        } else if (sub === '标准地图') {
+          openStreamModal('original');
+        } else {
+          openStreamModal('all');
+        }
+      });
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.click();
+        }
+      });
+    });
+
+    // Cluster links in Section 2
+    const clusterLinks = document.querySelectorAll('.cluster-link');
+    clusterLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const sub = link.dataset.sub;
+        if (sub === 'Verygoogmaps') {
+          openStreamModal('gis');
+        } else if (sub === '标准地图') {
+          openStreamModal('original');
+        } else {
+          openStreamModal('all');
+        }
+      });
+      link.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          link.click();
+        }
+      });
+    });
 
     // Smooth Scroll Hint to Explore Section
     const scrollHint = document.getElementById('scrollHint');
@@ -420,9 +447,9 @@
 
     // Filter by source
     if (portalSourceFilter === 'gis') {
-      pool = pool.filter(i => i.category === 'gis');
+      pool = pool.filter(i => (i.subCategory && i.subCategory.includes('Verygoogmaps')));
     } else if (portalSourceFilter === 'original') {
-      pool = pool.filter(i => i.category === 'original');
+      pool = pool.filter(i => (i.subCategory && i.subCategory.includes('标准地图')));
     }
 
     // Filter by subcategory
@@ -474,7 +501,7 @@
       if (portalSubFilter) {
         poolBadge.textContent = '专题【' + portalSubFilter + '】· ' + pool.length + ' 幅';
       } else if (portalSourceFilter !== 'all') {
-        poolBadge.textContent = (portalSourceFilter === 'gis' ? '网上GIS' : '原创设计') + ' · ' + pool.length + ' 幅';
+        poolBadge.textContent = (portalSourceFilter === 'gis' ? '全球遥感' : '标准地图') + ' · ' + pool.length + ' 幅';
       } else {
         poolBadge.textContent = '全库 ' + galleryItems.length + ' 幅';
       }
@@ -525,9 +552,9 @@
   function renderStreamModal(doShuffle = false) {
     let pool = [...galleryItems];
     if (streamSourceFilter === 'gis') {
-      pool = pool.filter(i => i.category === 'gis');
+      pool = pool.filter(i => (i.subCategory && i.subCategory.includes('Verygoogmaps')));
     } else if (streamSourceFilter === 'original') {
-      pool = pool.filter(i => i.category === 'original');
+      pool = pool.filter(i => (i.subCategory && i.subCategory.includes('标准地图')));
     }
 
     if (doShuffle) {
@@ -539,8 +566,8 @@
 
     currentFilteredItems = [...pool];
 
-    const gisCount = galleryItems.filter(i => i.category === 'gis').length;
-    const origCount = galleryItems.filter(i => i.category === 'original').length;
+    const gisCount = galleryItems.filter(i => (i.subCategory && i.subCategory.includes('Verygoogmaps'))).length;
+    const origCount = galleryItems.filter(i => (i.subCategory && i.subCategory.includes('标准地图'))).length;
     const badgeEl = document.getElementById('streamItemCountBadge');
     const allEl = document.getElementById('streamAllCount');
     const gisEl = document.getElementById('streamGisCount');
@@ -699,11 +726,9 @@
 
     const subCats = new Set();
     items.forEach(item => {
-      const list = Array.isArray(item.subCategories) ? item.subCategories :
-                   (typeof item.subCategory === 'string' ? item.subCategory.split(/[,，、/·]+/).map(s => s.trim()) : []);
-      list.forEach(sub => {
-        if (sub) subCats.add(sub);
-      });
+      if (item.subCategory && item.subCategory.trim()) {
+        subCats.add(item.subCategory.trim());
+      }
     });
 
     const wideBtn = filterGroup.querySelector('[data-filter="wide"]');
@@ -735,15 +760,7 @@
       currentFilteredItems = [...baseItems];
     } else if (filterKey.startsWith('sub:')) {
       const sub = filterKey.replace('sub:', '');
-      currentFilteredItems = baseItems.filter(i => {
-        if (Array.isArray(i.subCategories)) {
-          return i.subCategories.includes(sub);
-        }
-        if (typeof i.subCategory === 'string') {
-          return i.subCategory.split(/[,，、/·]+/).map(s => s.trim()).includes(sub);
-        }
-        return false;
-      });
+      currentFilteredItems = baseItems.filter(i => i.subCategory === sub);
     } else if (filterKey === 'wide') {
       currentFilteredItems = baseItems.filter(i => i.aspectRatio >= 1.2);
     } else if (filterKey === 'tall') {
@@ -788,9 +805,7 @@
           '<img class="card-img" src="' + item.thumb + '" alt="' + escapeHtml(item.title) + '" loading="lazy" />' +
         '</div>';
     } else {
-      const subList = Array.isArray(item.subCategories) ? item.subCategories :
-                      (item.subCategory ? item.subCategory.split(/[,，、/·]+/).map(s => s.trim()) : []);
-      const subCatLabel = subList.map(s => '<span class="tag-pill tag-pill-secondary">' + escapeHtml(s) + '</span>').join('');
+      const subCatLabel = item.subCategory ? ('<span class="tag-pill tag-pill-secondary">' + escapeHtml(item.subCategory) + '</span>') : '';
 
       card.innerHTML = 
         '<div class="card-media">' +
@@ -831,8 +846,51 @@
   }
 
   /* -------------------------------------------------------------
-     3. Deep Zoom Viewer Modal & Info Drawer
+     3. Deep Zoom Viewer Modal, Info Drawer & High-Precision Navigator
      ------------------------------------------------------------- */
+  let isNavCollapsed = window.innerWidth <= 768;
+
+  function toggleNavigator(collapse) {
+    const navW = document.getElementById('navWrapper');
+    const navL = document.getElementById('navLauncher');
+    if (!navW || !navL) return;
+
+    if (collapse === undefined) {
+      isNavCollapsed = !isNavCollapsed;
+    } else {
+      isNavCollapsed = !!collapse;
+    }
+
+    if (isNavCollapsed) {
+      navW.classList.add('is-collapsed');
+      navL.classList.add('is-visible');
+    } else {
+      navW.classList.remove('is-collapsed');
+      navL.classList.remove('is-visible');
+    }
+    setTimeout(checkToolbarCollision, 50);
+  }
+
+  function checkToolbarCollision() {
+    const tb = document.querySelector('.viewer-floating-toolbar');
+    const navW = document.getElementById('navWrapper');
+    const navL = document.getElementById('navLauncher');
+    if (!tb || !navW || !navL) return;
+
+    const tbRect = tb.getBoundingClientRect();
+    const activeNav = !navW.classList.contains('is-collapsed') ? navW : navL;
+    const navRect = activeNav.getBoundingClientRect();
+
+    const isOverlapX = (navRect.right + 20 > tbRect.left);
+    if (isOverlapX) {
+      navW.classList.add('dodge-toolbar');
+      navL.classList.add('dodge-toolbar');
+    } else if (window.innerWidth > 1080) {
+      navW.classList.remove('dodge-toolbar');
+      navL.classList.remove('dodge-toolbar');
+    }
+  }
+
   function bindViewerModalEvents() {
     const modalEl = document.getElementById('viewerModal');
     if (!modalEl || modalEl.dataset.bound) return;
@@ -851,6 +909,16 @@
     const toolReset = document.getElementById('toolReset');
     const toolRotate = document.getElementById('toolRotate');
     const toolFullscreen = document.getElementById('toolFullscreen');
+
+    const btnCloseNav = document.getElementById('btnCloseNav');
+    const btnOpenNav = document.getElementById('btnOpenNav');
+    if (btnCloseNav) {
+      btnCloseNav.addEventListener('click', () => toggleNavigator(true));
+    }
+    if (btnOpenNav) {
+      btnOpenNav.addEventListener('click', () => toggleNavigator(false));
+    }
+    window.addEventListener('resize', checkToolbarCollision);
 
     backdropEl.addEventListener('click', closeViewer);
     closeBtn.addEventListener('click', closeViewer);
@@ -873,15 +941,9 @@
     if (drawerCloseBtn && drawerEl) {
       drawerCloseBtn.addEventListener('click', () => {
         drawerEl.classList.remove('open');
-        if (toggleInfoBtn) toggleInfoBtn.classList.remove('active');
+        if (toggleInfoBtn) toggleInfoBtn.classList.remove('active'); if (window.AtlasMorphicons && window.AtlasMorphicons.info) window.AtlasMorphicons.info.set(false);
       });
     }
-
-    const shareBtn = document.getElementById('btnShareArtwork');
-    if (shareBtn) shareBtn.addEventListener('click', shareCurrentArtwork);
-
-    const copyShareUrlBtn = document.getElementById('btnCopyShareUrl');
-    if (copyShareUrlBtn) copyShareUrlBtn.addEventListener('click', shareCurrentArtwork);
 
     const toolToggleLang = document.getElementById('toolToggleLang');
     if (toolToggleLang) {
@@ -941,8 +1003,14 @@
     if (toolRotate) {
       toolRotate.addEventListener('click', () => {
         if (osdViewer) {
-          const curr = osdViewer.viewport.getRotation();
-          osdViewer.viewport.setRotation((curr + 90) % 360);
+          if (window.AtlasMorphicons && window.AtlasMorphicons.rotate) {
+            window.AtlasMorphicons.rotate.rotateNext((nextAngle) => {
+              osdViewer.viewport.setRotation(nextAngle);
+            });
+          } else {
+            const curr = osdViewer.viewport.getRotation();
+            osdViewer.viewport.setRotation((curr + 90) % 360);
+          }
         }
       });
     }
@@ -966,19 +1034,27 @@
       modalEl.classList.toggle('fullscreen-mode', isFs);
       if (isFs) {
         if (toolFullscreen) {
-          toolFullscreen.innerHTML = SVG_EXIT_FULLSCREEN;
-          toolFullscreen.title = '退出沉浸全屏 (F / Esc)';
+          if (window.AtlasMorphicons && window.AtlasMorphicons.fullscreen) {
+            window.AtlasMorphicons.fullscreen.set(true);
+          } else {
+            toolFullscreen.innerHTML = SVG_EXIT_FULLSCREEN;
+          }
+          toolFullscreen.title = '退出全屏 (F / Esc)';
         }
         // Close drawer if open to maintain immersion
         if (drawerEl) drawerEl.classList.remove('open');
-        if (toggleInfoBtn) toggleInfoBtn.classList.remove('active');
+        if (toggleInfoBtn) toggleInfoBtn.classList.remove('active'); if (window.AtlasMorphicons && window.AtlasMorphicons.info) window.AtlasMorphicons.info.set(false);
         // Hide controls immediately on enter
         modalEl.classList.remove('controls-visible');
         clearTimeout(fsIdleTimer);
       } else {
         if (toolFullscreen) {
-          toolFullscreen.innerHTML = SVG_FULLSCREEN;
-          toolFullscreen.title = '全屏视界 (F)';
+          if (window.AtlasMorphicons && window.AtlasMorphicons.fullscreen) {
+            window.AtlasMorphicons.fullscreen.set(false);
+          } else {
+            toolFullscreen.innerHTML = SVG_FULLSCREEN;
+          }
+          toolFullscreen.title = '视口全屏 (F)';
         }
         modalEl.classList.remove('controls-visible');
         clearTimeout(fsIdleTimer);
@@ -1041,28 +1117,12 @@
         case 'I':
           if (toggleInfoBtn) toggleInfoBtn.click();
           break;
-        case 's':
-        case 'S':
-          shareCurrentArtwork();
+        case 'o':
+        case 'O':
+        case 'm':
+        case 'M':
+          toggleNavigator();
           break;
-      }
-    });
-
-    window.addEventListener('popstate', () => {
-      const modalEl = document.getElementById('viewerModal');
-      const urlParams = new URLSearchParams(window.location.search);
-      const id = urlParams.get('id') || urlParams.get('art');
-      if (id) {
-        const item = findArtworkByQuery(id);
-        if (item) {
-          if (!modalEl || !modalEl.classList.contains('open') || currentFilteredItems[currentViewerIndex]?.id !== item.id) {
-            openViewerByItem(item);
-          }
-        }
-      } else {
-        if (modalEl && modalEl.classList.contains('open')) {
-          closeViewer(false);
-        }
       }
     });
 
@@ -1150,13 +1210,12 @@
   }
 
   function openViewerByItem(item) {
-    if (!item) return;
-    let idx = currentFilteredItems.findIndex(i => i.id === item.id);
-    if (idx === -1) {
-      currentFilteredItems.unshift(item);
-      idx = 0;
+    const idx = currentFilteredItems.findIndex(i => i.id === item.id);
+    if (idx !== -1) {
+      currentViewerIndex = idx;
+    } else {
+      currentViewerIndex = 0;
     }
-    currentViewerIndex = idx;
     showArtwork(item);
   }
 
@@ -1252,7 +1311,7 @@
     }
 
     if (mFile) mFile.textContent = item.filename;
-    if (mRes) mRes.textContent = item.width + ' × ' + item.height + (item.physicalSize ? ' (' + item.physicalSize + ')' : '');
+    if (mRes) mRes.textContent = item.width + ' × ' + item.height;
     if (mAspect) mAspect.textContent = item.aspectRatio + ':1 (原始画幅比)';
     if (mLevels) mLevels.textContent = '共 ' + (item.maxLevel + 1) + ' 级超高清多精度金字塔 (Level 0 ~ ' + item.maxLevel + ')';
 
@@ -1290,15 +1349,7 @@
       });
     }
 
-    const mShareUrl = document.getElementById('metaShareUrl');
-    const shareUrl = getShareUrlForItem(item);
-    if (mShareUrl) {
-      mShareUrl.textContent = shareUrl;
-      mShareUrl.title = shareUrl;
-    }
-
-    updateBrowserUrl(item);
-
+    toggleNavigator(window.innerWidth <= 768);
     loadOpenSeadragon(item);
   }
 
@@ -1461,15 +1512,22 @@
     };
 
     // Calculate exact navigator dimensions matching artwork aspect ratio (100% full-bleed, 0 white edges)
-    const maxNavDim = 200;
+    const isMobile = window.innerWidth <= 768;
+    const maxNavDim = isMobile ? 150 : 220;
     let navWidth, navHeight;
     const ar = item.aspectRatio || (item.width / item.height);
     if (ar >= 1) {
       navWidth = maxNavDim;
-      navHeight = Math.max(65, Math.round(maxNavDim / ar));
+      navHeight = Math.max(isMobile ? 55 : 70, Math.round(maxNavDim / ar));
     } else {
       navHeight = maxNavDim;
-      navWidth = Math.max(65, Math.round(maxNavDim * ar));
+      navWidth = Math.max(isMobile ? 55 : 70, Math.round(maxNavDim * ar));
+    }
+
+    const navStageContainer = document.getElementById('navStageContainer');
+    if (navStageContainer) {
+      navStageContainer.style.width = navWidth + 'px';
+      navStageContainer.style.height = navHeight + 'px';
     }
 
     osdViewer = OpenSeadragon({
@@ -1478,14 +1536,15 @@
       tileSources: tileSource,
       showNavigationControl: false,
       showNavigator: true,
-      navigatorPosition: 'BOTTOM_RIGHT',
+      navigatorId: 'osdNavigator',
+      navigatorPosition: 'BOTTOM_LEFT',
       navigatorAutoResize: false,
       navigatorMaintainSizeRatio: false,
       navigatorWidth: navWidth,
       navigatorHeight: navHeight,
       navigatorBackground: 'transparent',
       navigatorBorderColor: '#80cc28',
-      navigatorDisplayRegionColor: 'rgba(128, 204, 40, 0.35)',
+      navigatorDisplayRegionColor: 'rgba(128, 204, 40, 0.28)',
       navigatorDisplayOnLogicalClick: true,
       animationTime: 0.45,
       springStiffness: 9.0,
@@ -1510,34 +1569,39 @@
     });
 
     function updateZoomBadge() {
+      if (!osdViewer || !osdViewer.viewport) return;
+      const curZ = osdViewer.viewport.getZoom();
+      const homeZ = osdViewer.viewport.getHomeZoom();
+      const isFull = Math.abs(curZ - homeZ) / homeZ < 0.04;
+
+      if (window.AtlasMorphicons && window.AtlasMorphicons.reset) {
+        if (isFull) {
+          window.AtlasMorphicons.reset.toFit();
+        } else {
+          window.AtlasMorphicons.reset.toZoomed();
+        }
+      }
+
+      // 全图完整显示时自动隐藏鹰眼图选区框，聚焦细节时才平滑淡出呈现
+      const displayRegion = document.querySelector('#osdNavigator .displayregion');
+      if (displayRegion) {
+        displayRegion.classList.toggle('is-full-view', isFull);
+      }
+
       const badge = document.getElementById('toolZoomBadge');
-      if (!badge || !osdViewer || !osdViewer.viewport) return;
+      if (!badge) return;
       try {
         const actualZoom = osdViewer.viewport.imageToViewportZoom(1);
         if (actualZoom <= 0) return;
-        const currentZoom = osdViewer.viewport.getZoom();
-        const percent = Math.round((currentZoom / actualZoom) * 100);
+        const percent = Math.round((curZ / actualZoom) * 100);
         badge.textContent = percent + '%';
-      } catch (err) {
-        // silently ignore if viewport not ready
-      }
+      } catch (err) {}
     }
 
     osdViewer.addHandler('open', function () {
       updateZoomBadge();
-      if (osdViewer && osdViewer.navigator) {
-        osdViewer.navigator.setWidth(navWidth);
-        osdViewer.navigator.setHeight(navHeight);
-        if (osdViewer.navigator.element) {
-          osdViewer.navigator.element.style.width = navWidth + 'px';
-          osdViewer.navigator.element.style.height = navHeight + 'px';
-          osdViewer.navigator.element.style.border = '2px solid var(--accent)';
-          osdViewer.navigator.element.style.borderRadius = 'var(--radius-sm)';
-          osdViewer.navigator.element.style.overflow = 'hidden';
-          osdViewer.navigator.element.style.background = 'transparent';
-          osdViewer.navigator.element.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.45)';
-        }
-      }
+      setupNavigatorInteractions(item, navWidth, navHeight);
+      checkToolbarCollision();
     });
 
     osdViewer.addHandler('zoom', updateZoomBadge);
@@ -1547,7 +1611,141 @@
     if (stageEl) stageEl.style.backgroundColor = stageBg;
   }
 
-  function closeViewer(updateHistory = true) {
+  function setupNavigatorInteractions(item, navWidth, navHeight) {
+    const overlay = document.getElementById('navDrawOverlay');
+    const box = document.getElementById('navDrawBox');
+    if (!overlay || !box) return;
+
+    // 清理旧监听器 (通过节点克隆替换)
+    const newOverlay = overlay.cloneNode(true);
+    overlay.parentNode.replaceChild(newOverlay, overlay);
+    const newBox = newOverlay.querySelector('#navDrawBox');
+
+    let isDrawing = false;
+    let startX = 0, startY = 0;
+    let currentX = 0, currentY = 0;
+
+    newOverlay.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      isDrawing = true;
+      const rect = newOverlay.getBoundingClientRect();
+      startX = e.clientX - rect.left;
+      startY = e.clientY - rect.top;
+      currentX = startX;
+      currentY = startY;
+
+      newBox.style.left = startX + 'px';
+      newBox.style.top = startY + 'px';
+      newBox.style.width = '0px';
+      newBox.style.height = '0px';
+      newBox.style.display = 'none';
+
+      newOverlay.setPointerCapture(e.pointerId);
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    newOverlay.addEventListener('pointermove', (e) => {
+      if (!isDrawing) return;
+      const rect = newOverlay.getBoundingClientRect();
+      currentX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+      currentY = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
+
+      const left = Math.min(startX, currentX);
+      const top = Math.min(startY, currentY);
+      const width = Math.abs(currentX - startX);
+      const height = Math.abs(currentY - startY);
+
+      if (width > 4 || height > 4) {
+        newBox.style.display = 'block';
+        newBox.style.left = left + 'px';
+        newBox.style.top = top + 'px';
+        newBox.style.width = width + 'px';
+        newBox.style.height = height + 'px';
+      }
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    newOverlay.addEventListener('pointerup', (e) => {
+      if (!isDrawing) return;
+      isDrawing = false;
+      try {
+        newOverlay.releasePointerCapture(e.pointerId);
+      } catch (err) {}
+
+      const rect = newOverlay.getBoundingClientRect();
+      const left = Math.min(startX, currentX);
+      const top = Math.min(startY, currentY);
+      const width = Math.abs(currentX - startX);
+      const height = Math.abs(currentY - startY);
+
+      if (width > 6 && height > 6) {
+        newBox.style.transition = 'opacity 0.2s ease';
+        newBox.style.opacity = '0';
+        setTimeout(() => {
+          newBox.style.display = 'none';
+          newBox.style.opacity = '1';
+          newBox.style.transition = '';
+        }, 200);
+
+        if (osdViewer && osdViewer.viewport) {
+          let targetBounds = null;
+          if (osdViewer.navigator && osdViewer.navigator.viewport) {
+            try {
+              const p1 = osdViewer.navigator.viewport.pointFromPixel(new OpenSeadragon.Point(left, top));
+              const p2 = osdViewer.navigator.viewport.pointFromPixel(new OpenSeadragon.Point(left + width, top + height));
+              const minX = Math.min(p1.x, p2.x);
+              const minY = Math.min(p1.y, p2.y);
+              const w = Math.abs(p2.x - p1.x);
+              const h = Math.abs(p2.y - p1.y);
+              if (w > 0.001 && h > 0.001 && isFinite(minX) && isFinite(minY)) {
+                targetBounds = new OpenSeadragon.Rect(minX, minY, w, h);
+              }
+            } catch (err) {}
+          }
+          if (!targetBounds) {
+            const artAr = item.aspectRatio || (item.width / item.height);
+            const normX = left / navWidth;
+            const normY = (top / navHeight) * (1 / artAr);
+            const normW = width / navWidth;
+            const normH = (height / navHeight) * (1 / artAr);
+            targetBounds = new OpenSeadragon.Rect(normX, normY, normW, normH);
+          }
+          osdViewer.viewport.fitBounds(targetBounds, false);
+          osdViewer.viewport.applyConstraints();
+        }
+      } else {
+        // 单击操作：快速平移中心到点击位置
+        newBox.style.display = 'none';
+        if (osdViewer && osdViewer.viewport) {
+          let clickPt = null;
+          if (osdViewer.navigator && osdViewer.navigator.viewport) {
+            try {
+              clickPt = osdViewer.navigator.viewport.pointFromPixel(new OpenSeadragon.Point(currentX, currentY));
+            } catch (e) {}
+          }
+          if (!clickPt || !isFinite(clickPt.x) || !isFinite(clickPt.y)) {
+            const artAr = item.aspectRatio || (item.width / item.height);
+            const normX = currentX / navWidth;
+            const normY = (currentY / navHeight) * (1 / artAr);
+            clickPt = new OpenSeadragon.Point(normX, normY);
+          }
+          osdViewer.viewport.panTo(clickPt, false);
+          osdViewer.viewport.applyConstraints();
+        }
+      }
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    newOverlay.addEventListener('pointercancel', () => {
+      isDrawing = false;
+      newBox.style.display = 'none';
+    });
+  }
+
+  function closeViewer() {
     const modalEl = document.getElementById('viewerModal');
     if (!modalEl) return;
 
@@ -1561,10 +1759,13 @@
     const drawerEl = document.getElementById('viewerDrawer');
     const toggleInfoBtn = document.getElementById('btnToggleInfo');
     if (drawerEl) drawerEl.classList.remove('open');
-    if (toggleInfoBtn) toggleInfoBtn.classList.remove('active');
+    if (toggleInfoBtn) toggleInfoBtn.classList.remove('active'); if (window.AtlasMorphicons && window.AtlasMorphicons.info) window.AtlasMorphicons.info.set(false);
 
     const badge = document.getElementById('toolZoomBadge');
     if (badge) badge.textContent = '100%';
+
+    const navBox = document.getElementById('navDrawBox');
+    if (navBox) navBox.style.display = 'none';
 
     if (osdViewer) {
       osdViewer.destroy();
@@ -1573,10 +1774,6 @@
 
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
-    }
-
-    if (updateHistory) {
-      clearBrowserUrl();
     }
 
     // 精确还原至进入深览前的视口滚动位置，优先精准对准当前作品卡片
@@ -1590,143 +1787,6 @@
         window.scrollTo({ top: preViewerScrollY, behavior: 'auto' });
       }
     });
-  }
-
-  /* -------------------------------------------------------------
-     4. Single Artwork Direct Share & Deep Linking
-     ------------------------------------------------------------- */
-  function getShareUrlForItem(item) {
-    if (!item) return window.location.href;
-    try {
-      const url = new URL(window.location.href);
-      const targetPage = item.category === 'gis' ? 'gis.html' : 'original.html';
-      if (url.pathname.endsWith('.html')) {
-        url.pathname = url.pathname.replace(/[^/]+\.html$/, targetPage);
-      } else {
-        url.pathname = url.pathname.replace(/\/+$/, '') + '/' + targetPage;
-      }
-      url.searchParams.delete('art');
-      url.searchParams.set('id', item.id);
-      url.hash = '';
-      return url.toString();
-    } catch (e) {
-      const targetPage = item.category === 'gis' ? 'gis.html' : 'original.html';
-      return targetPage + '?id=' + encodeURIComponent(item.id);
-    }
-  }
-
-  function shareCurrentArtwork() {
-    if (currentViewerIndex < 0 || !currentFilteredItems[currentViewerIndex]) return;
-    const item = currentFilteredItems[currentViewerIndex];
-    const url = getShareUrlForItem(item);
-    copyToClipboard(url);
-
-    const shareBtn = document.getElementById('btnShareArtwork');
-    if (shareBtn) {
-      shareBtn.classList.add('copied');
-      setTimeout(() => shareBtn.classList.remove('copied'), 1500);
-    }
-
-    const copyBtn = document.getElementById('btnCopyShareUrl');
-    if (copyBtn) {
-      copyBtn.textContent = '已复制!';
-      copyBtn.classList.add('copied');
-      setTimeout(() => {
-        copyBtn.textContent = '复制';
-        copyBtn.classList.remove('copied');
-      }, 1500);
-    }
-
-    showToast('已复制画作《' + item.title + '》直链');
-  }
-
-  function updateBrowserUrl(item) {
-    if (!item) return;
-    try {
-      const url = new URL(window.location.href);
-      if (url.searchParams.get('id') !== item.id) {
-        url.searchParams.delete('art');
-        url.searchParams.set('id', item.id);
-        window.history.replaceState({ artworkId: item.id }, '', url.toString());
-      }
-    } catch (e) {}
-  }
-
-  function clearBrowserUrl() {
-    try {
-      const url = new URL(window.location.href);
-      if (url.searchParams.has('id') || url.searchParams.has('art') || window.location.hash) {
-        url.searchParams.delete('id');
-        url.searchParams.delete('art');
-        url.hash = '';
-        window.history.replaceState(null, '', url.toString());
-      }
-    } catch (e) {}
-  }
-
-  function findArtworkByQuery(query) {
-    if (!query) return null;
-    let q = '';
-    try {
-      q = decodeURIComponent(String(query)).trim().toLowerCase();
-    } catch (e) {
-      q = String(query).trim().toLowerCase();
-    }
-    if (!q) return null;
-
-    return galleryItems.find(item => {
-      if (item.id && item.id.toLowerCase() === q) return true;
-      if (Array.isArray(item.aliases) && item.aliases.some(a => String(a).trim().toLowerCase() === q)) return true;
-      if (item.title && item.title.trim().toLowerCase() === q) return true;
-      if (item.filename) {
-        const fn = item.filename.trim().toLowerCase();
-        if (fn === q) return true;
-        if (fn.replace(/\.[^.]+$/, '') === q) return true;
-      }
-      return false;
-    });
-  }
-
-  function checkUrlDeepLink() {
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      let target = urlParams.get('id') || urlParams.get('art');
-      if (!target && window.location.hash) {
-        const hash = window.location.hash.replace(/^#\/?/, '');
-        if (hash.startsWith('id=')) target = hash.replace('id=', '');
-        else if (hash.startsWith('art=')) target = hash.replace('art=', '');
-        else target = hash;
-      }
-      if (target) {
-        const match = findArtworkByQuery(target);
-        if (match) {
-          setTimeout(() => {
-            openViewerByItem(match);
-          }, 120);
-          return true;
-        }
-      }
-    } catch (e) {
-      console.warn('Error checking URL deep link:', e);
-    }
-    return false;
-  }
-
-  let toastTimer = null;
-  function showToast(message, duration = 2200) {
-    let toast = document.getElementById('galleryToast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'galleryToast';
-      toast.className = 'gallery-toast';
-      document.body.appendChild(toast);
-    }
-    toast.innerHTML = '<span class="toast-indicator"></span><span class="toast-text">' + escapeHtml(message) + '</span>';
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      toast.classList.remove('show');
-    }, duration);
   }
 
   /* -------------------------------------------------------------
@@ -1753,5 +1813,207 @@
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
+  }
+})();
+
+
+/* =============================================================
+   Morphicons Integration Controller for OpenQGIS Atlas
+   Manages morphing for:
+     Scene A: #toolReset (ResetFit <-> ResetZoomed)
+     Scene B: #toolRotate (RotateCw step rotation with spring dynamics)
+     Scene C: #toolFullscreen (Maximize <-> Minimize)
+     Scene D: #btnToggleInfo (Info <-> X)
+     Scene E: #btnLangDropdown & #viewerBtnLangDropdown (Languages <-> Globe)
+     Scene F: #btnShareOptLink (Link <-> Check)
+   ============================================================= */
+
+(function () {
+  'use strict';
+
+  let morphReset = null;
+  let morphRotate = null;
+  let morphFullscreen = null;
+  let morphInfo = null;
+  let morphHeaderLang = null;
+  let morphViewerLang = null;
+  let morphShareLink = null;
+
+  let rotateAngle = 0;
+  let isRotateBusy = false;
+
+  function initAtlasMorphicons() {
+    if (!window.Morphicons || !window.LucideIcons) {
+      console.warn('Morphicons or LucideIcons bundle not found');
+      return;
+    }
+
+    const { createMorph } = window.Morphicons;
+    const {
+      ResetFit, ResetZoomed,
+      RotateCw,
+      Maximize, Minimize,
+      CircleHelp, X,
+      Languages, Globe,
+      Link, Check
+    } = window.LucideIcons;
+
+    // A: toolReset
+    const pReset = document.getElementById('pathResetMorph');
+    if (pReset) {
+      const m = createMorph(pReset, ResetFit);
+      let isZoomed = false;
+      morphReset = {
+        toFit() {
+          if (!isZoomed) return;
+          isZoomed = false;
+          m.morphTo(ResetFit, 'snappy');
+        },
+        toZoomed() {
+          if (isZoomed) return;
+          isZoomed = true;
+          m.morphTo(ResetZoomed, 'snappy');
+        },
+        toggle() {
+          isZoomed = !isZoomed;
+          m.morphTo(isZoomed ? ResetZoomed : ResetFit, 'snappy');
+        }
+      };
+    }
+
+    // B: toolRotate (Scheme 3: Pure-torque spring dynamics, scale strictly 1.0)
+    const pRotate = document.getElementById('pathRotateMorph');
+    const svgRotate = document.getElementById('toolRotateSvg');
+    if (pRotate && svgRotate) {
+      const m = createMorph(pRotate, RotateCw);
+      morphRotate = {
+        rotateNext(onComplete) {
+          if (isRotateBusy) return;
+          isRotateBusy = true;
+          const targetAngle = rotateAngle + 90;
+
+          // Stage 1 (0ms): Reverse recoil -22 deg (scale strictly 1.0)
+          svgRotate.style.transition = 'transform 0.14s cubic-bezier(0.4, 0, 0.2, 1)';
+          svgRotate.style.transform = `rotate(${rotateAngle - 22}deg)`;
+
+          // Stage 2 (140ms): Forward torque sprint, overshoot +14 deg
+          setTimeout(() => {
+            svgRotate.style.transition = 'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)';
+            svgRotate.style.transform = `rotate(${targetAngle + 14}deg)`;
+          }, 140);
+
+          // Stage 3 (420ms): Spring damping settling at targetAngle
+          setTimeout(() => {
+            svgRotate.style.transition = 'transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            svgRotate.style.transform = `rotate(${targetAngle}deg)`;
+          }, 420);
+
+          // Lock final angle (580ms)
+          setTimeout(() => {
+            rotateAngle = targetAngle;
+            isRotateBusy = false;
+            if (typeof onComplete === 'function') onComplete(rotateAngle % 360);
+          }, 580);
+        },
+        reset() {
+          rotateAngle = 0;
+          isRotateBusy = false;
+          if (svgRotate) {
+            svgRotate.style.transition = 'none';
+            svgRotate.style.transform = 'rotate(0deg)';
+          }
+        }
+      };
+    }
+
+    // C: toolFullscreen
+    const pFullscreen = document.getElementById('pathFullscreenMorph');
+    if (pFullscreen) {
+      const m = createMorph(pFullscreen, Maximize);
+      let isFs = false;
+      morphFullscreen = {
+        set(fsState) {
+          if (isFs === fsState) return;
+          isFs = fsState;
+          m.morphTo(isFs ? Minimize : Maximize, 'snappy');
+        }
+      };
+    }
+
+    // D: btnToggleInfo
+    // Info icon path: circle with line/dot -> morphs to X
+    const pInfo = document.getElementById('pathInfoMorph');
+    if (pInfo) {
+      const InfoIcon = {
+        d: 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v-4M12 8h.01'
+      };
+      const m = createMorph(pInfo, InfoIcon);
+      let isOpen = false;
+      morphInfo = {
+        set(openState) {
+          if (isOpen === openState) return;
+          isOpen = openState;
+          m.morphTo(isOpen ? X : InfoIcon, 'snappy');
+        }
+      };
+    }
+
+    // E: Language Dropdowns (Languages <-> Globe)
+    const pHeaderLang = document.getElementById('pathHeaderLangMorph');
+    if (pHeaderLang) {
+      const m = createMorph(pHeaderLang, Languages);
+      let isOpen = false;
+      morphHeaderLang = {
+        set(openState) {
+          if (isOpen === openState) return;
+          isOpen = openState;
+          m.morphTo(isOpen ? Globe : Languages, 'snappy');
+        }
+      };
+    }
+
+    const pViewerLang = document.getElementById('pathViewerLangMorph');
+    if (pViewerLang) {
+      const m = createMorph(pViewerLang, Languages);
+      let isOpen = false;
+      morphViewerLang = {
+        set(openState) {
+          if (isOpen === openState) return;
+          isOpen = openState;
+          m.morphTo(isOpen ? Globe : Languages, 'snappy');
+        }
+      };
+    }
+
+    // F: btnShareOptLink (Link <-> Check)
+    const pShareLink = document.getElementById('pathShareLinkMorph');
+    if (pShareLink) {
+      const m = createMorph(pShareLink, Link);
+      morphShareLink = {
+        triggerSuccess(duration = 1800) {
+          m.morphTo(Check, 'snappy');
+          setTimeout(() => {
+            m.morphTo(Link, 'snappy');
+          }, duration);
+        }
+      };
+    }
+
+    window.AtlasMorphicons = {
+      reset: morphReset,
+      rotate: morphRotate,
+      fullscreen: morphFullscreen,
+      info: morphInfo,
+      headerLang: morphHeaderLang,
+      viewerLang: morphViewerLang,
+      shareLink: morphShareLink
+    };
+  }
+
+  // Hook into DOM lifecycle
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAtlasMorphicons);
+  } else {
+    initAtlasMorphicons();
   }
 })();
