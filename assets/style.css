@@ -1879,6 +1879,130 @@ body[data-page="portal"] {
   flex-direction: column;
   z-index: 1;
 }
+
+/* -------------------------------------------------------------
+   Top-Left Floating Artwork & Brand Badge (地图左上角头像图标与图名+QMapFlow)
+   ------------------------------------------------------------- */
+.viewer-artwork-badge {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px 8px 10px;
+  background: rgba(15, 18, 24, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.2);
+  user-select: none;
+  pointer-events: auto;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  max-width: calc(100vw - 40px);
+}
+
+.viewer-artwork-badge:hover {
+  background: rgba(22, 27, 36, 0.90);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 12px 30px rgba(0, 0, 0, 0.45),
+    0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+.viewer-artwork-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  display: block;
+}
+
+.viewer-artwork-meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+.viewer-artwork-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f8fafc;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+  line-height: 1.25;
+}
+
+.viewer-artwork-qmapflow {
+  display: flex;
+  align-items: center;
+  height: 15px;
+  line-height: 1;
+}
+
+.viewer-artwork-qmapflow svg,
+.viewer-qmapflow-img {
+  height: 15px;
+  width: auto;
+  display: block;
+}
+
+:root[data-theme="light"] .viewer-artwork-badge {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.10),
+    0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+:root[data-theme="light"] .viewer-artwork-badge:hover {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+:root[data-theme="light"] .viewer-artwork-title {
+  color: #0f172a;
+}
+
+@media (max-width: 768px) {
+  .viewer-artwork-badge {
+    top: 14px;
+    left: 14px;
+    padding: 6px 12px 6px 8px;
+    gap: 10px;
+    border-radius: 10px;
+    max-width: calc(100vw - 28px);
+  }
+  .viewer-artwork-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+  }
+  .viewer-artwork-title {
+    font-size: 0.86rem;
+    max-width: 180px;
+  }
+  .viewer-artwork-qmapflow {
+    height: 13px;
+  }
+  .viewer-artwork-qmapflow svg,
+  .viewer-qmapflow-img {
+    height: 13px;
+  }
+}
+
 .viewer-topbar,
 .viewer-header {
   height: 56px;
@@ -2019,27 +2143,59 @@ body[data-page="portal"] {
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(19, 23, 30, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  padding: 5px;
-  border-radius: var(--radius-md);
+  background: rgba(14, 18, 24, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 6px 8px;
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   gap: 4px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  box-shadow: 
+    0px 0.6px 0.6px -1.25px rgba(0, 0, 0, 0.28),
+    0px 2.3px 2.3px -2.5px rgba(0, 0, 0, 0.25),
+    0px 10px 10px -3.75px rgba(0, 0, 0, 0.2),
+    0px 20px 35px -5px rgba(0, 0, 0, 0.55);
   z-index: 20;
-  transition: all var(--transition-fast);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.viewer-float-toolbar:hover,
+.viewer-floating-toolbar:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 
+    0px 0.8px 1px -1px rgba(0, 0, 0, 0.32),
+    0px 3px 4px -2px rgba(0, 0, 0, 0.28),
+    0px 14px 18px -4px rgba(0, 0, 0, 0.24),
+    0px 26px 48px -6px rgba(0, 0, 0, 0.65);
 }
 
 :root[data-theme="light"] .viewer-float-toolbar,
 :root[data-theme="light"] .viewer-floating-toolbar {
-  background: rgba(255, 255, 255, 0.86);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 0, 0, 0.09);
-  box-shadow: 0 10px 30px rgba(15, 20, 28, 0.12);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0px 0.6px 0.6px -1.25px rgba(0, 0, 0, 0.08),
+    0px 2.3px 2.3px -2.5px rgba(0, 0, 0, 0.06),
+    0px 10px 10px -3.75px rgba(0, 0, 0, 0.05),
+    0px 16px 32px -4px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme="light"] .viewer-float-toolbar:hover,
+:root[data-theme="light"] .viewer-floating-toolbar:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 
+    0px 0.8px 1px -1px rgba(0, 0, 0, 0.10),
+    0px 3px 4px -2px rgba(0, 0, 0, 0.08),
+    0px 12px 16px -3px rgba(0, 0, 0, 0.08),
+    0px 22px 42px -5px rgba(0, 0, 0, 0.18);
 }
 
 .tool-btn {
@@ -2048,12 +2204,27 @@ body[data-page="portal"] {
   color: var(--text-secondary);
   width: 38px;
   height: 38px;
-  border-radius: var(--radius-sm);
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  position: relative;
+  will-change: transform;
+  transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tool-btn .icon,
+.tool-btn .tool-btn-text,
+.tool-btn span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  will-change: transform;
+  transition: transform 0.08s ease-out;
 }
 
 .tool-btn:hover {
@@ -2073,7 +2244,8 @@ body[data-page="portal"] {
 }
 
 .tool-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.90) !important;
+  transition: transform 0.08s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .tool-zoom-badge {
@@ -2322,8 +2494,179 @@ body[data-page="portal"] {
 
 
 /* =====================================================================
-   OpenSeadragon Navigator (右下角定位小地图 · 完美充满框架无白边)
+   OpenQGIS High-Precision Navigator & Liquid Glass Capsule System
+   (左下角超纯净交互式鹰眼图 + 液态玻璃胶囊 + 光学反色虚线画框缩放)
    ==================================================================== */
+.navigator-wrapper {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  background: rgba(14, 18, 24, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: visible; /* 允许悬停气泡浮出 */
+  user-select: none;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+              opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1), 
+              visibility 0.24s,
+              border-color 0.2s ease,
+              bottom 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: bottom left;
+}
+
+:root[data-theme="light"] .navigator-wrapper {
+  background: rgba(255, 255, 255, 0.90);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+}
+
+.navigator-wrapper:hover {
+  border-color: rgba(var(--accent-rgb), 0.45);
+}
+
+/* 鹰眼图收起状态 */
+.navigator-wrapper.is-collapsed {
+  transform: scale(0.9) translateY(14px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* 悬停在鹰眼图上时显示的顶部指示弹窗 (Tooltip: 左对齐指示) */
+.nav-hover-tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 0;
+  padding: 8px 14px;
+  background: rgba(14, 18, 24, 0.92);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  z-index: 100;
+}
+
+.nav-hover-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 22px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(14, 18, 24, 0.92) transparent transparent transparent;
+}
+
+:root[data-theme="light"] .nav-hover-tooltip {
+  background: rgba(255, 255, 255, 0.94);
+  border-color: rgba(0, 0, 0, 0.10);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme="light"] .nav-hover-tooltip::after {
+  border-color: rgba(255, 255, 255, 0.94) transparent transparent transparent;
+}
+
+/* 仅在鼠标悬停或内部元素获得焦点时显示提示卡片 */
+.navigator-wrapper:hover .nav-hover-tooltip,
+.navigator-wrapper:focus-within .nav-hover-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.nav-tip-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.2px;
+}
+
+.nav-tip-title svg {
+  width: 14px;
+  height: 14px;
+  color: var(--accent);
+}
+
+.nav-tip-divider {
+  width: 1px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+:root[data-theme="light"] .nav-tip-divider {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.nav-tip-action {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.nav-tip-action strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* 悬停右上角轻量关闭按钮 (仅鼠标悬停时浮现) */
+.nav-floating-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #d1d7e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1010;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  outline: none;
+}
+
+.navigator-wrapper:hover .nav-floating-close {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.nav-floating-close:hover {
+  background: rgba(220, 38, 38, 0.85);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.nav-floating-close svg {
+  width: 13px;
+  height: 13px;
+  stroke-width: 2.2;
+}
+
+/* OpenSeadragon 原生挂载容器 */
 .navigator {
   border: 2px solid var(--accent) !important;
   border-radius: var(--radius-sm) !important;
@@ -2345,10 +2688,295 @@ body[data-page="portal"] {
   background: transparent !important;
 }
 
+/* 显示范围视框：主站同款绿线 + 半透明绿填充 */
 .displayregion {
   border: 2px solid var(--accent) !important;
   background: rgba(var(--accent-rgb), 0.32) !important;
   box-sizing: border-box !important;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              visibility 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 全图完整显示时隐藏显示范围，还鹰眼底图以纯净视野 */
+.displayregion.is-full-view {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* 鹰眼视图舞台容器 (isolation: isolate 确保反色运算仅在舞台内部与底图生效) */
+.navigator-stage {
+  position: relative;
+  cursor: crosshair;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.25);
+  isolation: isolate;
+}
+
+/* 鼠标画框交互透明蒙层 */
+.nav-draw-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+/* 鼠标绘制的临时框架：虚线 + 与底图图像实时反色 (mix-blend-mode: difference) */
+.nav-draw-box {
+  position: absolute;
+  display: none;
+  box-sizing: border-box;
+  mix-blend-mode: difference;
+  border: 2px dashed #ffffff;
+  background: rgba(255, 255, 255, 0.16);
+  filter: drop-shadow(0 0 1px #000000);
+  pointer-events: none;
+  z-index: 1001;
+}
+
+/* 关闭鹰眼图后出现的液态玻璃胶囊浮标 */
+.nav-launcher-wrapper {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: 24;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(0.9) translateY(10px);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+              opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+              visibility 0.28s,
+              bottom 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-launcher-wrapper.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: scale(1) translateY(0);
+}
+
+/* 液态玻璃胶囊按钮 (同款 .viewer-floating-toolbar) */
+.nav-launcher-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  min-height: 40px;
+  border-radius: 9999px;
+  background: rgba(14, 18, 24, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0px 0.6px 0.6px -1.25px rgba(0, 0, 0, 0.28),
+    0px 2.3px 2.3px -2.5px rgba(0, 0, 0, 0.25),
+    0px 10px 10px -3.75px rgba(0, 0, 0, 0.2),
+    0px 20px 35px -5px rgba(0, 0, 0, 0.55);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  will-change: transform;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-launcher-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-rgb), 0.45);
+  color: #ffffff;
+  box-shadow: 
+    0px 0.8px 1px -1px rgba(0, 0, 0, 0.32),
+    0px 3px 4px -2px rgba(0, 0, 0, 0.28),
+    0px 14px 18px -4px rgba(0, 0, 0, 0.24),
+    0px 26px 48px -6px rgba(0, 0, 0, 0.65),
+    0 0 16px rgba(var(--accent-rgb), 0.2);
+}
+
+.nav-launcher-btn svg {
+  width: 15px;
+  height: 15px;
+  color: var(--accent);
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.nav-launcher-btn:hover svg {
+  transform: rotate(25deg);
+}
+
+:root[data-theme="light"] .nav-launcher-btn {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0px 0.6px 0.6px -1.25px rgba(0, 0, 0, 0.08),
+    0px 2.3px 2.3px -2.5px rgba(0, 0, 0, 0.06),
+    0px 10px 10px -3.75px rgba(0, 0, 0, 0.05),
+    0px 16px 32px -4px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme="light"] .nav-launcher-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-rgb), 0.45);
+  color: var(--text);
+  box-shadow: 
+    0px 0.8px 1px -1px rgba(0, 0, 0, 0.10),
+    0px 3px 4px -2px rgba(0, 0, 0, 0.08),
+    0px 12px 16px -3px rgba(0, 0, 0, 0.08),
+    0px 22px 42px -5px rgba(0, 0, 0, 0.18),
+    0 0 16px rgba(var(--accent-rgb), 0.15);
+}
+
+/* 键盘按键标识徽章 */
+.kbd-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 6px;
+  min-width: 16px;
+  color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.12);
+  border: 1px solid rgba(var(--accent-rgb), 0.32);
+  border-bottom: 2px solid rgba(var(--accent-rgb), 0.55);
+  border-radius: 4px;
+  user-select: none;
+  letter-spacing: 0.5px;
+}
+
+/* 悬停提示气泡 (左对齐液态玻璃风格) */
+.launcher-tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 0;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  background: rgba(14, 18, 24, 0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  box-shadow: 
+    0px 0.6px 0.6px -1.25px rgba(0, 0, 0, 0.28),
+    0px 2.3px 2.3px -2.5px rgba(0, 0, 0, 0.25),
+    0px 10px 10px -3.75px rgba(0, 0, 0, 0.2),
+    0px 16px 32px -4px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.launcher-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 22px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(14, 18, 24, 0.88) transparent transparent transparent;
+}
+
+:root[data-theme="light"] .launcher-tooltip {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0px 0.6px 0.6px -1.25px rgba(0, 0, 0, 0.08),
+    0px 2.3px 2.3px -2.5px rgba(0, 0, 0, 0.06),
+    0px 10px 10px -3.75px rgba(0, 0, 0, 0.05),
+    0px 16px 32px -4px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme="light"] .launcher-tooltip::after {
+  border-color: rgba(255, 255, 255, 0.92) transparent transparent transparent;
+}
+
+/* 仅在鼠标悬停或聚焦在胶囊上时才显示提示框 */
+.nav-launcher-wrapper:hover .launcher-tooltip,
+.nav-launcher-wrapper:focus-within .launcher-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   防重叠避让核心规则 (Toolbar Collision Avoidance Strategy)
+   1. 宽屏 (> 1080px): 底栏居中，鹰眼图在左下角，水平安全间隙 > 200px，从容共存
+   2. 中屏 / 平板 (<= 1080px): 鹰眼图与启动胶囊自动上浮至底栏上方 (bottom: 84px)
+   3. 动态守卫类 (.dodge-toolbar): 当 JS 几何碰撞探测判定间隙 < 20px 时强制上浮
+   4. 移动端 (<= 768px): 底栏精简宽度，鹰眼图默认折叠为胶囊；展开时优雅浮于底栏上方
+   ============================================================ */
+@media (max-width: 1080px) {
+  .navigator-wrapper,
+  .nav-launcher-wrapper {
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+.navigator-wrapper.dodge-toolbar,
+.nav-launcher-wrapper.dodge-toolbar {
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* ============================================================
+   移动端窄屏自适应规范 (UI/UX Pro Max 移动端适配)
+   针对手机等 <= 768px 窄屏进行手势、安全区、触控尺寸与视野保护优化
+   ============================================================ */
+@media (max-width: 768px) {
+  /* 移动端安全区偏移与底部避让 (Safe Area Awareness) */
+  .navigator-wrapper,
+  .nav-launcher-wrapper {
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+    left: calc(14px + env(safe-area-inset-left, 0px));
+  }
+
+  /* 触控友好胶囊按钮 (符合 Apple 44pt / Material 48dp 规范) */
+  .nav-launcher-btn {
+    min-height: 44px;
+    padding: 8px 18px;
+    font-size: 13px;
+  }
+
+  /* 移动端无 Hover 状态：常驻显示轻量关闭按钮，尺寸扩大便于触控 */
+  .nav-floating-close {
+    opacity: 0.95 !important;
+    transform: scale(1) !important;
+    width: 30px;
+    height: 30px;
+    top: 4px;
+    right: 4px;
+  }
+
+  /* 提示框在移动端紧凑化 */
+  .nav-hover-tooltip,
+  .launcher-tooltip {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
 }
 
 /* =====================================================================
@@ -2369,6 +2997,14 @@ body[data-page="portal"] {
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease !important;
 }
 
+.viewer-modal.fullscreen-mode .navigator-wrapper,
+.viewer-modal.fullscreen-mode .nav-launcher-wrapper {
+  transform: translateY(140%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease !important;
+}
+
 /* Mousemove or active hover gently reveals controls */
 .viewer-modal.fullscreen-mode.controls-visible .viewer-header {
   transform: translateY(0) !important;
@@ -2379,6 +3015,18 @@ body[data-page="portal"] {
 .viewer-modal.fullscreen-mode.controls-visible .viewer-floating-toolbar,
 .viewer-modal.fullscreen-mode.controls-visible .viewer-float-toolbar {
   transform: translate(-50%, 0) !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+} 
+
+.viewer-modal.fullscreen-mode.controls-visible .navigator-wrapper:not(.is-collapsed) {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.viewer-modal.fullscreen-mode.controls-visible .nav-launcher-wrapper.is-visible {
+  transform: translateY(0) !important;
   opacity: 1 !important;
   pointer-events: auto !important;
 } 
@@ -2476,102 +3124,67 @@ body[data-page="portal"] {
   transform: translateY(-50%) scale(1.15) !important;
 }
 
-/* -------------------------------------------------------------
-   Single Artwork Direct Share & Toast Notification
-   ------------------------------------------------------------- */
-.nav-btn.copied {
-  color: var(--accent) !important;
-  border-color: rgba(var(--accent-rgb), 0.6) !important;
-  background: var(--accent-subtle) !important;
+/* 移动端/触屏设备自然支持双指捏合缩放与双击放大，隐藏工具栏放大(+)与缩小(-)冗余按钮，释放屏幕空间 */
+@media (max-width: 768px) {
+  #toolZoomIn,
+  #toolZoomOut {
+    display: none !important;
+  }
 }
 
-.meta-share-row {
-  display: flex;
+
+
+/* =============================================================
+   Morphicons Integration & 3-Layer Toolbar Architecture
+   ============================================================= */
+
+/* 1. Ensure icon layer supports 3D preserve and full centering */
+.tb-icon-layer {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: var(--bg-surface-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 4px 6px 4px 10px;
-  margin-top: 4px;
-}
-
-.meta-share-url {
-  flex: 1;
-  font-size: 0.76rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  user-select: all;
-}
-
-.meta-copy-btn {
-  background: var(--accent-subtle);
-  border: 1px solid rgba(var(--accent-rgb), 0.35);
-  color: var(--accent);
-  font-size: 0.72rem;
-  padding: 3px 10px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-  font-weight: 500;
-}
-
-.meta-copy-btn:hover {
-  background: var(--accent);
-  color: #07080b;
-}
-
-.meta-copy-btn.copied {
-  background: rgba(74, 222, 128, 0.2);
-  color: #4ade80;
-  border-color: rgba(74, 222, 128, 0.4);
-}
-
-.gallery-toast {
-  position: fixed;
-  top: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-20px);
-  background: rgba(18, 22, 28, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
-  color: var(--text-primary);
-  font-size: 0.84rem;
-  padding: 8px 18px;
-  border-radius: 9999px;
-  z-index: 99999;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  opacity: 0;
-  visibility: hidden;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
-.gallery-toast.show {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
+/* 2. Tool buttons: absolute transparent background, no circular discs */
+.viewer-floating-toolbar .tool-btn,
+.viewer-float-toolbar .tool-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
-.toast-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.7);
-  flex-shrink: 0;
+.viewer-floating-toolbar .tool-btn:hover,
+.viewer-float-toolbar .tool-btn:hover {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
-:root[data-theme="light"] .gallery-toast {
-  background: rgba(255, 255, 255, 0.96);
-  border-color: rgba(0, 0, 0, 0.12);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-  color: #0f141c;
+:root[data-theme="light"] .viewer-floating-toolbar .tool-btn,
+:root[data-theme="light"] .viewer-float-toolbar .tool-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+:root[data-theme="light"] .viewer-floating-toolbar .tool-btn:hover,
+:root[data-theme="light"] .viewer-float-toolbar .tool-btn:hover {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 3. Smooth rotation dynamics for #toolRotate */
+#toolRotateSvg {
+  transform-origin: 50% 50%;
+  will-change: transform;
+  transform-style: preserve-3d;
+  pointer-events: none;
 }
